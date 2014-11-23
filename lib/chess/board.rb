@@ -18,5 +18,14 @@ module Chess
   	  Array.new(8) { Array.new(8) { Square.new }}
   	end
 
+    def print_board
+      print "_|_|_|_|_|_|
+             _|_|_|_|_|_|
+             _|_|_|_|_|_|
+             _|_|_|_|_|_|
+             _|_|_|_|_|_|
+             _|_|_|_|_|_|"
+    end
+
   end
 end
