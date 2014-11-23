@@ -1,9 +1,10 @@
 require_relative "chess/version"
 require_relative "chess/player.rb"
-#require_relative "chess/board.rb"
-#require_relative "chess/game.rb"
-#require_relative "chess/load_save.rb"
+require_relative "chess/board.rb"
+require_relative "chess/game.rb"
+require_relative "chess/load_save.rb"
 require_relative "chess/pieces.rb"
+require_relative "chess/square.rb"
 
 module Chess
 
@@ -17,7 +18,10 @@ module Chess
     def start_test
   	  puts "Welcome to chess game"
   	  k = Chess::Knight.new(color: "black")
-  	  #k = Chess::Knight.new
+  	  b = Chess::Board.new
+  	  b.print_board
+  	  b.set_cell(0, 0, "wK")
+  	  b.print_board
   	  puts k.class
   	  puts k.type
   	  puts k.color
@@ -35,10 +39,3 @@ module Chess
 end
 
 s = Chess::Test.new.start_test
-
-print "___ |_|_|_|
-       _B2_|_|_|_|
-       __ _|_|_|_|
-       _|_|_|_|_|_|
-       _|_|_|_|_|_|
-       _|_|_|_|_|_|"

@@ -23,8 +23,8 @@ module Chess
   	  f = File.open("../saved_games/#{filename}", 'r')
   	  yaml = f.read
   	  game = Game.new
-	  game = YAML::load(yaml)
-	  game.resume
+	    game = YAML::load(yaml)
+	    game.resume
     end
 
     def self.save_game(file, name)
@@ -41,29 +41,13 @@ module Chess
   	  @list = []
   	  Dir.foreach('../saved_games/') do |item|
   	    @list << item
-	  end
-	  @list.select! {|item| item =~ /\w+/}
-	  @list
+	      end
+	    @list.select! {|item| item =~ /\w+/}
+	    @list
 	  end
 
     def self.access_list(position)
       @list[position.to_i - 1]
-    end
-
-    def load_game
-      f = File.open('../saved_games/' + 'luc_1414188484.yml', 'r')
-      yaml = f.read
-      game = Game.new
-    game = YAML::load(yaml)
-    game.resume
-    end
-
-    def save_game
-      time = Time.new
-      f = File.open("../saved_games/#{@player.name}_#{time.to_i}.yml", "w")
-      serialized_object = YAML.dump (self)
-      f.puts serialized_object
-      f.close
     end
 
     def loading
