@@ -24,6 +24,7 @@ module Chess
   	  g = Chess::Game.new([p, p2])
   	  g.board.print_board
   	  g.move(piece: "bk", destination: "e8")
+  	  g.move(piece: "bk", destination: "f8")
   	  puts g.select_piece("bk").present_position
   	  g.board.print_board
 
