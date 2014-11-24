@@ -1,11 +1,12 @@
 module Chess
   class Game
-  	attr_reader :players, :board, :current_player, :other_player
+  	attr_reader :players, :board, :current_player, :other_player, :avalible_pieces
 
-  	def initialize(players, board = Board.new)
+  	def initialize(players, board = Board.new, pieces = Piece.army)
   	  @players = players
   	  @board = board
   	  @current_player, @other_player = players.shuffle
+      @avalible_pieces = pieces
   	end
 
   	def switch_players
@@ -19,6 +20,27 @@ module Chess
   	def game_over_message
   	  "#{current_player.name}: won the game!"
   	end
+
+    def select_piece(n_value)
+      @avalible_pieces.each do |piece|
+        if piece.name == n_value
+          return piece
+        end
+      end
+    end
+
+    def set_piece_pos(piece, position)
+      p = select_piece(piece)
+      p.present_position = position    
+    end
+
+    def move(input)
+      piece = input.fetch(:piece)
+      destination = input.fetch(:destination)
+      x, y = human_move_to_coordinate(destination)
+      board.set_cell(x, y, piece)
+      set_piece_pos(piece, destination)
+    end
 
   	def get_move(human_move = gets.chomp)
   	  human_move_to_coordinate(human_move)
@@ -93,6 +115,25 @@ module Chess
      }
      mapping[human_move]
   	end
+
+    def run
+      puts "welcome to Chess Game!!!"
+      command = ""
+      while command != "q"
+        printf "enter command: "
+        input = gets.chomp
+        parts = input.split(" ")
+        command = parts[0]
+        case command
+          when 't' then tweet(parts[1..-1].join(" "))
+          when 'q' then puts "Goodbye!"
+          when 'dm' then dm(parts[1], parts[2..-1].join(" "))
+          when 'fl' then followers_list
+          else
+            puts "Sorry, I don't know how to #{command}"
+        end 
+      end
+    end
 
   	def play
   	  puts "#{current_player.name} has randomly been selected as the first player"

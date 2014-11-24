@@ -17,15 +17,16 @@ module Chess
     end
     def start_test
   	  puts "Welcome to chess game"
+  	  p = Chess::Player.new(color: "black", name: "Luk")
+  	  p2 = Chess::Player.new(color: "white", name: "Poul")
   	  k = Chess::Knight.new(color: "black")
-  	  b = Chess::Board.new
-  	  b.print_board
-  	  b.set_cell(0, 0, "wK")
-  	  b.print_board
-  	  puts k.class
-  	  puts k.type
-  	  puts k.color
-  	  puts k.possible_moves
+  	  #b = Chess::Board.new
+  	  g = Chess::Game.new([p, p2])
+  	  g.board.print_board
+  	  g.move(piece: "bk", destination: "e8")
+  	  puts g.select_piece("bk").present_position
+  	  g.board.print_board
+
     end
   end
 
