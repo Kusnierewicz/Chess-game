@@ -21,11 +21,25 @@ module Chess
   	  "#{current_player.name}: won the game!"
   	end
 
+    def army_setup(army)
+      @avalible_pieces.each do |piece|
+        piece.move(piece: piece.name, destination: piece.start_position)
+      end
+    end
+
     def select_piece(n_value)
       @avalible_pieces.each do |piece|
         if piece.name == n_value
           return piece
         end
+      end
+    end
+
+    def clean_after_move(piece)
+      p = select_piece(piece)
+      unless p.present_position == nil
+        x, y = human_move_to_coordinate(p.present_position)
+        board.set_cell(x, y, "  ")
       end
     end
 
@@ -37,6 +51,7 @@ module Chess
     def move(input)
       piece = input.fetch(:piece)
       destination = input.fetch(:destination)
+      clean_after_move(piece)
       x, y = human_move_to_coordinate(destination)
       board.set_cell(x, y, piece)
       set_piece_pos(piece, destination)
