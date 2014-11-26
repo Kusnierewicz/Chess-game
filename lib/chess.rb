@@ -22,13 +22,16 @@ module Chess
   	  k = Chess::Knight.new(color: "black")
   	  #b = Chess::Board.new
   	  g = Chess::Game.new([p, p2])
+  	  #puts g.avalible_pieces
+  	  g.army_setup(g.avalible_pieces)
   	  g.board.print_board
-  	  g.move(piece: "bk", destination: "e8")
-      puts g.select_piece("bk").present_position
-      g.board.print_board
-  	  g.move(piece: "bk", destination: "f8")
-  	  puts g.select_piece("bk").present_position
-  	  g.board.print_board
+  	  #g.move(piece: "bk", destination: "e8")
+      #puts g.select_piece("bk").start_position
+      #g.board.print_board
+  	  #g.move(piece: "bk", destination: "f8")
+  	  #puts g.select_piece("bk").present_position
+  	  #g.board.print_board
+  	  #puts g.select_piece("bk").type
 
     end
   end

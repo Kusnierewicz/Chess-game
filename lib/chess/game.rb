@@ -22,13 +22,16 @@ module Chess
   	end
 
     def army_setup(army)
-      @avalible_pieces.each do |piece|
-        piece.move(piece: piece.name, destination: piece.start_position)
+      puts "start"
+      avalible_pieces.each do |piece|
+        puts "getting #{piece}"
+        puts "#{piece.start_position}"
+        move(piece: piece.name, destination: piece.start_position)
       end
     end
 
     def select_piece(n_value)
-      @avalible_pieces.each do |piece|
+      avalible_pieces.each do |piece|
         if piece.name == n_value
           return piece
         end
