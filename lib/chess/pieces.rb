@@ -2,7 +2,7 @@ module Chess
 	class Piece
 	  attr_reader
 	  def initialize(input)
-	  	
+	  	@id = nil
 	  end
 
 	  def possible_moves
@@ -18,17 +18,19 @@ module Chess
 	  	#ekhm..
 	  end
 
-	  def self.set_starting_position(piece)
+	  def self.set_starting_position(army)
 	  	pawn = { "white" => ["a2","b2","c2","d2","e2","f2","g2","h2"], "black" => ["a7","b7","c7","d7","e7","f7","g7","h7"]}
 	  	rook = { "white" => ["a1","h1"], "black" => ["a8","h8"]}
 	  	bishop = { "white" => ["c1","f1"], "black" => ["c8","g8"]}
 	  	knight = { "white" => ["b1","g1"], "black" => ["b8","g8"]}
 	  	queen = { "white" => ["d1"], "black" => ["d8"]}
 	  	king = { "white" => ["e1"], "black" => ["e8"]}
-	  	if piece.type == "pawn"
+	  	army.each do |piece|
+  		if piece.type == "pawn"
 	  	  pawn.each_key do |key|
 	  	   if key == piece.color
 	  	   	 piece.start_position = pawn[key].pop
+
 	  	   end
 	  	  end
 	  	elsif piece.type == "rook"
@@ -46,7 +48,8 @@ module Chess
 	  	elsif piece.type == "knight"
 	  	  knight.each_key do |key|
 	  	   if key == piece.color
-	  	   	 piece.start_position = knight[key][0]
+	  	   	 piece.start_position = knight[key].pop
+	  	   	 #knight[key].delete(0)
 	  	   end
 	  	  end
 	  	elsif piece.type == "queen"
@@ -62,16 +65,17 @@ module Chess
 	  	   end
 	  	  end
 	  	end
+	  	end
 	  end
 
 	  def self.army
 	  	army = []
 	  	k = Chess::Knight.new(color: "black")
-	  	k2 = Chess::Knight.new(color: "black")
-	  	set_starting_position(k)
-	  	set_starting_position(k2)
+	  	k.id = k.object_id
+	  	#k2 = Chess::Knight.new(color: "black")	  	
 	  	army << k
-	  	army << k2
+	  	#army << k2
+	  	set_starting_position(army)
 	  	army
 	  end
 	  
