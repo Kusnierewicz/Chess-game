@@ -5,9 +5,10 @@ module Chess
 	  	
 	  end
 
-	  def possible_moves
-	  	puts @move
+	  def self.possible_moves(type)
+
 	  end
+
 	  def possible_attacks
 	  	puts @attack
 	  end
@@ -94,7 +95,7 @@ module Chess
 	  	@id = nil
 	  	@start_position = nil
 	  	@present_position = nil
-	  	@move = "two ahead one on the side"
+	  	@move = [[1,0],[-1,0],[0,1],[0,-1],[-1,1],[1,-1],[1,1],[-1,-1]]
 	  	@attack = @move
 	  	@name = "#{@color[0]}#{@type[0].upcase}"
 	  end
@@ -139,7 +140,7 @@ module Chess
 	  	@id = nil
 	  	@start_position = nil
 	  	@present_position = nil
-	  	@move = "two ahead one on the side"
+	  	@move = nil
 	  	@attack = @move
 	  	@name = "#{@color[0]}#{@type[0].upcase}"
 	  end
@@ -154,7 +155,7 @@ module Chess
 	  	@id = nil
 	  	@start_position = nil
 	  	@present_position = nil
-	  	@move = "two ahead one on the side"
+	  	@move = [[-2,-1],[-1,-2],[1,-2],[2,-1],[1,2],[2,1],[-1,2],[-2,1]]
 	  	@attack = @move
 	  	@name = "#{@color[0]}#{@type[0]}"
 	  end
@@ -169,7 +170,7 @@ module Chess
 	  	@id = nil
 	  	@start_position = "a2"
 	  	@present_position = nil
-	  	@move = "two ahead one on the side"
+	  	@move = [[2,0],[1,0],[-2,0],[-1,0],[-1,1],[1,-1],[1,1],[-1,-1]]
 	  	@attack = @move
 	  	@name = "#{@color[0]}#{@type[0].upcase}"
 	  end

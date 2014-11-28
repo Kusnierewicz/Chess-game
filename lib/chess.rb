@@ -5,6 +5,7 @@ require_relative "chess/game.rb"
 require_relative "chess/load_save.rb"
 require_relative "chess/pieces.rb"
 require_relative "chess/square.rb"
+require_relative "chess/knight_travails.rb"
 
 module Chess
 
@@ -30,8 +31,9 @@ module Chess
   	  g.move(piece: "bk", destination: "h6")
   	  g.board.print_board
   	  #puts g.possible_moves("bk")
-      puts g.select_piece("bk").id
-      puts g.possible_moves("bk")
+      p = g.select_piece("bk")
+      puts "--------------------------"
+      puts g.check_avalible_moves("bk")
       #g.board.print_board
   	  #g.move(piece: "bk", destination: "f8")
   	  #puts g.select_piece("bk").present_position

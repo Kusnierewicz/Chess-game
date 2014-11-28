@@ -41,7 +41,6 @@ module Chess
     end
 
     def clean_after_move(piece)
-      
       p = select_piece(piece)
       unless p.present_position == nil
         x, y = human_move_to_coordinate(p.present_position)
@@ -54,42 +53,24 @@ module Chess
       p.present_position = position    
     end
 
-    def possible_moves(piece)
-      array = []
+    def check_avalible_moves(piece)
       p = select_piece(piece)
-      puts p
-      position = comp_move_to_human(p.present_position)
-      puts "positon = #{position}"
-      case p.type
-        when 'pawn'
-          
-        when 'rook'
-          
-        when 'bishop'
-          
-        when 'knight'
-          proposal << position[0]-2, position[1]-1
+      position = human_move_to_coordinate(p.present_position)
+      moves = p.move
+      array = []
+      moves.size.times do |n|
+        proposal = []
+        proposal << (position[0] + moves[n-1][0])
+        proposal << (position[1] + moves[n-1][1])
+        n += 1
+        if comp_move_to_human(proposal)
           array << comp_move_to_human(proposal)
-          #array << comp_move_to_human(position[0]-2, position[1]+1)
-          #array << comp_move_to_human(position[0]+2, position[1]-1)
-          #array << comp_move_to_human(position[0]+2, position[1]+1)
-          #array << comp_move_to_human(position[0]-1, position[1]-1)
-          #array << comp_move_to_human(position[0]-1, position[1]+1)
-          #array << comp_move_to_human(position[0]+1, position[1]-1)
-          #array << comp_move_to_human(position[0]+1, position[1]+1)
-          
-        when 'queen'
-          
-        when 'king'
-          
-        else
-          puts "Sorry, I don't know how to #{command}"
+        end
       end
-      array 
+      array
     end
 
     def move(input)
-      #parts = input.split(" ")
       piece = input.fetch(:piece)
       destination = input.fetch(:destination)
       clean_after_move(piece)
