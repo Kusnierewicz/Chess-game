@@ -2,7 +2,7 @@ module Chess
 	class Piece
 	  attr_reader
 	  def initialize(input)
-	  	@id = nil
+	  	
 	  end
 
 	  def possible_moves
@@ -68,10 +68,14 @@ module Chess
 	  	end
 	  end
 
+	  def self.set_id(piece)
+	  	piece.id = piece.object_id
+	  end
+
 	  def self.army
 	  	army = []
 	  	k = Chess::Knight.new(color: "black")
-	  	k.id = k.object_id
+	  	set_id(k)
 	  	#k2 = Chess::Knight.new(color: "black")	  	
 	  	army << k
 	  	#army << k2
@@ -83,10 +87,11 @@ module Chess
 
 	class King < Piece
 	  attr_reader :color, :type, :move, :name
-	  attr_accessor :present_position, :start_position
+	  attr_accessor :present_position, :start_position, :id
 	  def initialize(input)
 	  	@color = input.fetch(:color)
 	  	@type = "king"
+	  	@id = nil
 	  	@start_position = nil
 	  	@present_position = nil
 	  	@move = "two ahead one on the side"
@@ -97,10 +102,11 @@ module Chess
 
 	class Queen < Piece
 	  attr_reader :color, :type, :move, :name
-	  attr_accessor :present_position, :start_position
+	  attr_accessor :present_position, :start_position, :id
 	  def initialize(input)
 	  	@color = input.fetch(:color)
 	  	@type = "queen"
+	  	@id = nil
 	  	@start_position = nil
 	  	@present_position = nil
 	  	@move = "two ahead one on the side"
@@ -111,10 +117,11 @@ module Chess
 
 	class Rook < Piece
 	  attr_reader :color, :type, :move, :name
-	  attr_accessor :present_position, :start_position
+	  attr_accessor :present_position, :start_position, :id
 	  def initialize(input)
 	  	@color = input.fetch(:color)
 	  	@type = "rook"
+	  	@id = nil
 	  	@start_position = nil
 	  	@present_position = nil
 	  	@move = "two ahead one on the side"
@@ -125,10 +132,11 @@ module Chess
 
 	class Bishop < Piece
 	  attr_reader :color, :type, :move, :name
-	  attr_accessor :present_position, :start_position
+	  attr_accessor :present_position, :start_position, :id
 	  def initialize(input)
 	  	@color = input.fetch(:color)
 	  	@type = "bishop"
+	  	@id = nil
 	  	@start_position = nil
 	  	@present_position = nil
 	  	@move = "two ahead one on the side"
@@ -139,10 +147,11 @@ module Chess
 
 	class Knight < Piece
 	  attr_reader :color, :type, :move, :name
-	  attr_accessor :present_position, :start_position
+	  attr_accessor :present_position, :start_position, :id
 	  def initialize(input)
 	  	@color = input.fetch(:color)
 	  	@type = "knight"
+	  	@id = nil
 	  	@start_position = nil
 	  	@present_position = nil
 	  	@move = "two ahead one on the side"
@@ -153,10 +162,11 @@ module Chess
 
 	class Pawn < Piece
 	  attr_reader :color, :type, :move, :name
-	  attr_accessor :present_position, :start_position
+	  attr_accessor :present_position, :start_position, :id
 	  def initialize(input)
 	  	@color = input.fetch(:color)
 	  	@type = "pawn"
+	  	@id = nil
 	  	@start_position = "a2"
 	  	@present_position = nil
 	  	@move = "two ahead one on the side"

@@ -22,7 +22,7 @@ module Chess
   	  k = Chess::Knight.new(color: "black")
   	  #b = Chess::Board.new
   	  g = Chess::Game.new([p, p2])
-  	  puts g.id
+  	  
   	  g.army_setup(g.avalible_pieces)
   	  g.board.print_board
   	  g.move(piece: "bk", destination: "c6")
@@ -30,7 +30,8 @@ module Chess
   	  g.move(piece: "bk", destination: "h6")
   	  g.board.print_board
   	  #puts g.possible_moves("bk")
-      #puts g.select_piece("bk").start_position
+      puts g.select_piece("bk").id
+      puts g.possible_moves("bk")
       #g.board.print_board
   	  #g.move(piece: "bk", destination: "f8")
   	  #puts g.select_piece("bk").present_position

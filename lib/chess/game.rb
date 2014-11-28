@@ -41,6 +41,7 @@ module Chess
     end
 
     def clean_after_move(piece)
+      
       p = select_piece(piece)
       unless p.present_position == nil
         x, y = human_move_to_coordinate(p.present_position)
@@ -54,8 +55,37 @@ module Chess
     end
 
     def possible_moves(piece)
-      position = comp_move_to_human(piece.present_position)
-      position
+      array = []
+      p = select_piece(piece)
+      puts p
+      position = comp_move_to_human(p.present_position)
+      puts "positon = #{position}"
+      case p.type
+        when 'pawn'
+          
+        when 'rook'
+          
+        when 'bishop'
+          
+        when 'knight'
+          proposal << position[0]-2, position[1]-1
+          array << comp_move_to_human(proposal)
+          #array << comp_move_to_human(position[0]-2, position[1]+1)
+          #array << comp_move_to_human(position[0]+2, position[1]-1)
+          #array << comp_move_to_human(position[0]+2, position[1]+1)
+          #array << comp_move_to_human(position[0]-1, position[1]-1)
+          #array << comp_move_to_human(position[0]-1, position[1]+1)
+          #array << comp_move_to_human(position[0]+1, position[1]-1)
+          #array << comp_move_to_human(position[0]+1, position[1]+1)
+          
+        when 'queen'
+          
+        when 'king'
+          
+        else
+          puts "Sorry, I don't know how to #{command}"
+      end
+      array 
     end
 
     def move(input)
