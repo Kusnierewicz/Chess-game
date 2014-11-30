@@ -10,6 +10,7 @@ module Chess
 		  @rightchild = nil
 		  @rootnode = nil
 		  @parent = nil
+		  @children = []
 	  end
 
 	  def set_parent(parent)
@@ -28,9 +29,13 @@ module Chess
 	end
 
   class Tree
+  	attr_accessor :game, :piece, :board
 
-  	def initialize(name)
+  	def initialize(name, game, piece, board)
   	  @name = name
+  	  @game = game
+  	  @piece = piece
+  	  @board = board
   	end
 
   	def build_tree(arr)
@@ -38,15 +43,59 @@ module Chess
 
   	  arr.each_with_index do |element, index|
   	  	if @branch.empty? 
-  	  	  @noderoot = BasicDataStructures::Node.new(element)
+  	  	  @noderoot = Chess::Node.new(element)
   	  	  @noderoot.set_root
   	  	  @noderoot.id = @noderoot.object_id
   	  	  @branch << @noderoot
   	  	else
-  	  	  @branch << instance_variable_set("@node#{index}", BasicDataStructures::Node.new(element))
+  	  	  @branch << instance_variable_set("@node#{index}", Chess::Node.new(element))
   	  	  @branch.last.id = @branch.last.object_id
   	  	  add_to_tree(@branch.last, @noderoot)
   	  	end
+  	  end
+	end
+
+	def set_board
+	  puts @game.inspect
+	  puts @piece.inspect
+	  puts @board.inspect
+	end
+
+	def build_sequence_tree(piece, avalible_moves, @branch = [])
+	  if @brand.empty?
+	  	node0 = Chess::Node.new(piece)
+	  	node0.id = node0.object_id
+	  	@branch << node0
+	  	avalible_moves.delete(game.set_piece_pos(piece))
+	  end
+	  arr = game.check_avalible_moves(piece)
+	  
+	  if avalible_moves.empty? != true
+	  	
+	  	arr.each_with_index do |element, index|
+	  	  if avalible_moves.include?(element)
+	  	  	@branch << instance_variable_set("@node#{@branch.size}", Chess::Node.new(element))
+	  	  	@branch.last.id = @branch.last.object_id
+	  	  	@branch.last.parent = node0.id
+	  	  	avalible_moves.delete(element)
+	  	  	
+	  	  else
+	  	  	puts "#{element} is not in avalible_moves"
+	  	  end
+	  	end
+=begin 	  	
+  	  	arr.each_with_index do |element, index|
+  	  	if @branch.empty? 
+  	  	  @noderoot = Chess::Node.new(element)
+  	  	  @noderoot.rootnode = true
+  	  	  @noderoot.id = @noderoot.object_id
+  	  	  @branch << @noderoot
+  	  	else
+  	  	  @branch << instance_variable_set("@node#{index}", Chess::Node.new(element))
+  	  	  @branch.last.id = @branch.last.object_id
+  	  	  add_to_tree(@branch.last, @noderoot)
+  	  	end
+=end
   	  end
 	end
 

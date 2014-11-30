@@ -54,7 +54,12 @@ module Chess
     end
 
     def check_avalible_moves(piece)
-      p = select_piece(piece)
+      if piece.class == String
+        p = select_piece(piece)
+      else
+        p = piece
+      end
+      puts "p is #{p}"
       position = human_move_to_coordinate(p.present_position)
       moves = p.move
       array = []
