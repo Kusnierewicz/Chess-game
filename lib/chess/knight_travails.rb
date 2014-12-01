@@ -61,7 +61,7 @@ module Chess
 	  puts @board.inspect
 	end
 
-	def build_sequence_tree(piece, avalible_moves, @branch = [])
+	def build_sequence_tree(piece, avalible_moves, branch = [])
 	  if @brand.empty?
 	  	node0 = Chess::Node.new(piece)
 	  	node0.id = node0.object_id

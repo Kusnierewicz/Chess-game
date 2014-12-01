@@ -44,12 +44,13 @@ module Chess
       #tree.read_tree
       #puts tree.depth_first_search(100, tree.rootnode)
 
-      tree.build_sequence_tree("bk", full_board)
+      #tree.build_sequence_tree("bk", full_board)
       #g.board.print_board
   	  #g.move(piece: "bk", destination: "f8")
   	  #puts g.select_piece("bk").present_position
   	  #g.board.print_board
   	  #puts g.select_piece("bk").type
+  	  puts g.methods
 
     end
   end
