@@ -40,6 +40,14 @@ module Chess
       end
     end
 
+    def select_piece_by_id(n_value)
+      avalible_pieces.each do |piece|
+        if piece.id == n_value
+          return piece
+        end
+      end
+    end
+
     def clean_after_move(piece)
       p = select_piece(piece)
       unless p.present_position == nil

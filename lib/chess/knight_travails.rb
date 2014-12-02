@@ -1,7 +1,7 @@
 
 module Chess
 	class Node
-	  attr_accessor :id, :value, :leftchild, :rightchild, :rootnode, :parent
+	  attr_accessor :id, :value, :leftchild, :rightchild, :rootnode, :parent, :children
 
 	  def initialize(value)
 		  @id = nil
@@ -62,23 +62,38 @@ module Chess
 	end
 
 	def build_sequence_tree(piece, avalible_moves, branch = [])
-	  if @brand.empty?
-	  	node0 = Chess::Node.new(piece)
+	  if branch.empty?
+	  	puts "branch is empty"
+	  	puts "piece position = #{piece.present_position}"
+	  	node0 = Chess::Node.new(piece.present_position)
+	  	puts "node0 value = #{node0.value}"
 	  	node0.id = node0.object_id
-	  	@branch << node0
-	  	avalible_moves.delete(game.set_piece_pos(piece))
+	  	branch << node0
+	  	puts "#{branch.inspect}"
+	  	puts "#{avalible_moves.size}"
+	  	avalible_moves.delete(piece.present_position)
+	  	puts "#{avalible_moves.size}"
 	  end
 	  arr = game.check_avalible_moves(piece)
+	  puts "arr = #{arr.inspect}"
 	  
 	  if avalible_moves.empty? != true
 	  	
 	  	arr.each_with_index do |element, index|
 	  	  if avalible_moves.include?(element)
-	  	  	@branch << instance_variable_set("@node#{@branch.size}", Chess::Node.new(element))
-	  	  	@branch.last.id = @branch.last.object_id
-	  	  	@branch.last.parent = node0.id
+	  	  	branch << instance_variable_set("@node#{branch.size}", Chess::Node.new(element))
+	  	  	branch.last.id = branch.last.object_id
+	  	  	branch.last.parent = piece.id
+	  	  	puts "piece id = #{piece.id}"
+	  	  	puts "branch.last.inspect = #{branch.last.inspect}"
+	  	  	puts "piece class = #{piece.class}"
+	  	  	if piece.class == "Node"
+	  	  		piece.children << branch.last.id
+	  	  	end
 	  	  	avalible_moves.delete(element)
-	  	  	
+	  	  	puts "branch size = #{branch.size}"
+	  	  	puts "#{branch.last.value.inspect}"
+
 	  	  else
 	  	  	puts "#{element} is not in avalible_moves"
 	  	  end
@@ -97,6 +112,7 @@ module Chess
   	  	end
 =end
   	  end
+  	  puts "branch = #{branch.inspect}"
 	end
 
 	def add_to_tree(new_node, parent_node)

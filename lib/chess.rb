@@ -21,9 +21,14 @@ module Chess
   	  p = Chess::Player.new(color: "black", name: "Luk")
   	  p2 = Chess::Player.new(color: "white", name: "Poul")
   	  k = Chess::Knight.new(color: "black")
+  	  k.present_position = "d4"
+  	  
   	  #b = Chess::Board.new
   	  g = Chess::Game.new([p, p2])
-  	  
+  	  Piece.set_id(k)
+  	  #Piece.set_starting_position([k])
+
+
   	  g.army_setup(g.avalible_pieces)
   	  g.board.print_board
   	  g.move(piece: "bk", destination: "c6")
@@ -44,13 +49,13 @@ module Chess
       #tree.read_tree
       #puts tree.depth_first_search(100, tree.rootnode)
 
-      #tree.build_sequence_tree("bk", full_board)
+      tree.build_sequence_tree(k, full_board)
       #g.board.print_board
   	  #g.move(piece: "bk", destination: "f8")
   	  #puts g.select_piece("bk").present_position
   	  #g.board.print_board
   	  #puts g.select_piece("bk").type
-  	  puts g.methods
+  	  #puts g.methods
 
     end
   end
