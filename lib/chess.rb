@@ -49,7 +49,7 @@ module Chess
       #tree.read_tree
       #puts tree.depth_first_search(100, tree.rootnode)
 
-      tree.build_sequence_tree(k, full_board)
+      tree.start_sequence("bk", full_board)
       #g.board.print_board
   	  #g.move(piece: "bk", destination: "f8")
   	  #puts g.select_piece("bk").present_position

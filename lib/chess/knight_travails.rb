@@ -61,19 +61,27 @@ module Chess
 	  puts @board.inspect
 	end
 
-	def build_sequence_tree(piece, avalible_moves, branch = [])
+	def start_sequence(piece, moves)
+	  p = game.select_piece(piece)
+	  position = p.present_position
+	  build_sequence_tree(piece, position, moves)
+	end
+
+
+	def build_sequence_tree(piece, position, avalible_moves, branch = [])
 	  if branch.empty?
 	  	puts "branch is empty"
-	  	puts "piece position = #{piece.present_position}"
-	  	node0 = Chess::Node.new(piece.present_position)
+	  	puts "piece position = #{position}"
+	  	node0 = Chess::Node.new(position)
 	  	puts "node0 value = #{node0.value}"
 	  	node0.id = node0.object_id
 	  	branch << node0
 	  	puts "#{branch.inspect}"
 	  	puts "#{avalible_moves.size}"
-	  	avalible_moves.delete(piece.present_position)
+	  	avalible_moves.delete(position)
 	  	puts "#{avalible_moves.size}"
 	  end
+	  game.set_piece_pos(piece, position)
 	  arr = game.check_avalible_moves(piece)
 	  puts "arr = #{arr.inspect}"
 	  
@@ -83,36 +91,30 @@ module Chess
 	  	  if avalible_moves.include?(element)
 	  	  	branch << instance_variable_set("@node#{branch.size}", Chess::Node.new(element))
 	  	  	branch.last.id = branch.last.object_id
-	  	  	branch.last.parent = piece.id
-	  	  	puts "piece id = #{piece.id}"
+	  	  	if piece.class == String
+	  	  	  node0.children << branch.last.id
+	  	  	  branch.last.parent = node0.id
+	  	  	else
+	  	  	  piece.children << branch.last.id
+	  	  	  branch.last.parent = piece.id
+	  	  	end
+	  	  	
+	  	  	#puts "piece id = #{piece.id}"
 	  	  	puts "branch.last.inspect = #{branch.last.inspect}"
 	  	  	puts "piece class = #{piece.class}"
-	  	  	if piece.class == "Node"
-	  	  		piece.children << branch.last.id
-	  	  	end
+	  	  	
+	  	  		
+	  	  	
 	  	  	avalible_moves.delete(element)
 	  	  	puts "branch size = #{branch.size}"
 	  	  	puts "#{branch.last.value.inspect}"
-
+	  	  	#build_sequence_tree(piece, branch.last.value, avalible_moves, branch)
 	  	  else
 	  	  	puts "#{element} is not in avalible_moves"
 	  	  end
 	  	end
-=begin 	  	
-  	  	arr.each_with_index do |element, index|
-  	  	if @branch.empty? 
-  	  	  @noderoot = Chess::Node.new(element)
-  	  	  @noderoot.rootnode = true
-  	  	  @noderoot.id = @noderoot.object_id
-  	  	  @branch << @noderoot
-  	  	else
-  	  	  @branch << instance_variable_set("@node#{index}", Chess::Node.new(element))
-  	  	  @branch.last.id = @branch.last.object_id
-  	  	  add_to_tree(@branch.last, @noderoot)
-  	  	end
-=end
   	  end
-  	  puts "branch = #{branch.inspect}"
+  	  print "branch = #{branch.inspect}"
 	end
 
 	def add_to_tree(new_node, parent_node)
