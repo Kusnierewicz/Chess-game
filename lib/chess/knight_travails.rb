@@ -36,6 +36,7 @@ module Chess
   	  @game = game
   	  @piece = piece
   	  @board = board
+  	  @branch = []
   	end
 
   	def build_tree(arr)
@@ -60,6 +61,33 @@ module Chess
 	  puts @piece.inspect
 	  puts @board.inspect
 	end
+
+
+
+	def bt(piece, position, avalible_moves)
+	  if avalible_moves.empty?
+	  	puts "avalible_moves empty"
+	  	return @branch
+	  elsif @branch.empty?
+	  	puts "branch is empty"
+	  	node0 = Chess::Node.new(position)
+	  	puts "node0 value = #{node0.value}"
+	  	node0.id = node0.object_id
+	  	@branch << node0
+	  	puts "#{@branch.inspect}"
+	  	puts "#{avalible_moves.size}"
+	  	avalible_moves.delete(position)
+	  	puts "#{avalible_moves.size}"
+	  else
+	  	puts "branch and avalible_moves not empty"
+	  	@branch << instance_variable_set("@node#{@branch.size}", Chess::Node.new(element))
+	  	@branch.last.id = @branch.last.object_id
+		arr = game.check_avalible_moves(piece)
+	  	puts "arr = #{arr.inspect}"
+
+	  end
+
+
 
 	def start_sequence(piece, moves)
 	  p = game.select_piece(piece)
