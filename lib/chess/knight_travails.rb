@@ -62,39 +62,42 @@ module Chess
 	  puts @board.inspect
 	end
 
-
-
 	def bt(piece, position, avalible_moves)
-	  if avalible_moves.empty?
-	  	puts "avalible_moves empty"
-	  	return @branch
-	  elsif @branch.empty?
-	  	puts "branch is empty"
-	  	node0 = Chess::Node.new(position)
-	  	puts "node0 value = #{node0.value}"
-	  	node0.id = node0.object_id
-	  	@branch << node0
-	  	puts "#{@branch.inspect}"
-	  	puts "#{avalible_moves.size}"
-	  	avalible_moves.delete(position)
-	  	puts "#{avalible_moves.size}"
-	  else
-	  	puts "branch and avalible_moves not empty"
-	  	@branch << instance_variable_set("@node#{@branch.size}", Chess::Node.new(element))
-	  	@branch.last.id = @branch.last.object_id
-		arr = game.check_avalible_moves(piece)
-	  	puts "arr = #{arr.inspect}"
-
+	  while avalible_moves.empty? != true
+		  if @branch.empty?
+		  	puts "branch is empty"
+		  	node0 = Chess::Node.new(position)
+		  	puts "node0 value = #{node0.value}"
+		  	node0.id = node0.object_id
+		  	@branch << node0
+		  	puts "#{@branch.inspect}"
+		  	puts "avalible_moves size przed = #{avalible_moves.size}"
+		  	avalible_moves.delete(position)
+		  	puts "avalible_moves size po = #{avalible_moves.size}"
+		  else
+		  	puts "branch and avalible_moves not empty"
+		  	@branch << instance_variable_set("@node#{@branch.size}", Chess::Node.new(position))
+		  	@branch.last.id = @branch.last.object_id
+			arr = game.check_avalible_moves_t("bk", position)
+		  	puts "arr = #{arr.inspect}"
+		  	arr.each_with_index do |element, index|
+		  	  if avalible_moves.include?(element)
+		  	  	bt("bk", element, avalible_moves)
+		  	  else
+		  	  	puts "#{element} is not in avalible_moves"
+		  	  end
+		  	end
+		  end
 	  end
-
-
+	  puts "avalible_moves empty"
+	  return @branch  
+	end
 
 	def start_sequence(piece, moves)
 	  p = game.select_piece(piece)
 	  position = p.present_position
 	  build_sequence_tree(piece, position, moves)
 	end
-
 
 	def build_sequence_tree(piece, position, avalible_moves, branch = [])
 	  if branch.empty?

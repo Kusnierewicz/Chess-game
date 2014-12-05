@@ -83,6 +83,28 @@ module Chess
       array
     end
 
+    def check_avalible_moves_t(piece, position2)
+      if piece.class == String
+        p = select_piece(piece)
+      else
+        p = piece
+      end
+      puts "p is #{p}"
+      position = human_move_to_coordinate(position2)
+      moves = p.move
+      array = []
+      moves.size.times do |n|
+        proposal = []
+        proposal << (position[0] + moves[n-1][0])
+        proposal << (position[1] + moves[n-1][1])
+        n += 1
+        if comp_move_to_human(proposal)
+          array << comp_move_to_human(proposal)
+        end
+      end
+      array
+    end
+
     def move(input)
       piece = input.fetch(:piece)
       destination = input.fetch(:destination)
