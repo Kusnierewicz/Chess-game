@@ -63,7 +63,8 @@ module Chess
 	end
 
 	def bt(piece, position, avalible_moves)
-	  while avalible_moves.empty? != true
+	  i = 0
+	  while avalible_moves.empty? == false
 		  if @branch.empty?
 		  	puts "branch is empty"
 		  	node0 = Chess::Node.new(position)
@@ -73,24 +74,145 @@ module Chess
 		  	puts "#{@branch.inspect}"
 		  	puts "avalible_moves size przed = #{avalible_moves.size}"
 		  	avalible_moves.delete(position)
+		  	puts "position = #{position}"
 		  	puts "avalible_moves size po = #{avalible_moves.size}"
+		  	arr = game.check_avalible_moves_t("bk", position)
+		  	puts "arr = #{arr.inspect}"
+		  	arr.each do |element|
+		  	  puts "elemend = #{element}"
+		  	  	puts "ruch jest go go"
+		  	  	bt("bk", element, avalible_moves)
+		  	  
+		  	end
+		  elsif avalible_moves.include?(position)
+		  	puts "move avalible"
+		  	@branch << instance_variable_set("@node#{@branch.size}", Chess::Node.new(position))
+		  	@branch.last.id = @branch.last.object_id
+		  	puts "position to #{position}"
+		  	puts "--------------------------"
+		  	puts @branch.last.inspect
+		  	puts "--------------------------"
+		  	puts "avalible_moves size przed = #{avalible_moves.size}"
+		  	avalible_moves.delete(position)
+		  	puts "position = #{position}"
+		  	puts "avalible_moves size po = #{avalible_moves.size}"
+		  	@branch.last.id = @branch.last.object_id
+			arr = game.check_avalible_moves_t("bk", position)
+		  	puts "arr = #{arr.inspect}"
+		  	arr.each do |element|
+		  	  puts "elemend = #{element}"
+		  	  	puts "ruch jest go go"
+		  	  	bt("bk", element, avalible_moves)
+		  	  
+		  	end
+		  	puts "i wyszedlem z tego"
+		  	#avalible_moves.clear
+		  else
+		  	puts "#{position} is not in array"
+		  end
+	  end
+	  puts "avalible_moves empty"
+	  return @branch.inspect  
+	end
+
+	def bt2(piece, position, avalible_moves)
+	  i = 0
+	  while avalible_moves.empty? == false
+		  if @branch.empty?
+		  	puts "branch is empty"
+		  	node0 = Chess::Node.new(position)
+		  	puts "node0 value = #{node0.value}"
+		  	node0.id = node0.object_id
+		  	@branch << node0
+		  	puts "--------------------------"
+		  	puts @branch.last.inspect
+		  	puts @branch.size
+		  	puts "--------------------------"
+		  	puts "avalible_moves size przed = #{avalible_moves.size}"
+		  	avalible_moves.delete(position)
+		  	puts "avalible_moves size po = #{avalible_moves.size}"
+		  	arr = game.check_avalible_moves_t("bk", position)
+		  	puts "arr przed filtracja = #{arr.inspect}"
+		  	substract_from_arr = []
+		  	arr.each do |element|
+		  	  puts "check for unavalible moves"
+		  	  if avalible_moves.include?(element)
+		  	  	puts "ruch #{element} jest ok"
+		  	  else
+		  	  	puts "ruch #{element} jest nie ok"
+		  	  	substract_from_arr << element
+		  	  end
+		  	end
+		  	arr -= substract_from_arr
+		  	puts "arr po filtracji = #{arr.inspect}"
+		  	if arr.empty?
+		  	  avalible_moves.clear
+		  	end
+		  	arr.each_with_index do |element, index|
+		  	  puts "elemend of index #{index} = #{element}"
+		  	  if avalible_moves.include?(element)
+		  	  	puts "ruch jest go go"
+		  	  	bt2("bk", element, avalible_moves)
+		  	  	i += 1
+		  	  	puts "#{i}"
+		  	  else
+		  	  	puts "element not in arr"
+		  	  	puts avalible_moves.inspect
+		  	  	arr.delete(element)
+		  	  	puts arr.size
+		  	  end
+		  	end
 		  else
 		  	puts "branch and avalible_moves not empty"
 		  	@branch << instance_variable_set("@node#{@branch.size}", Chess::Node.new(position))
 		  	@branch.last.id = @branch.last.object_id
+		  	puts "position to #{position}"
+		  	puts "--------------------------"
+		  	puts @branch.last.inspect
+		  	puts @branch.size
+		  	puts "--------------------------"
+		  	puts "avalible_moves size przed = #{avalible_moves.size}"
+		  	avalible_moves.delete(position)
+		  	puts "avalible_moves size po = #{avalible_moves.size}"
+		  	@branch.last.id = @branch.last.object_id
 			arr = game.check_avalible_moves_t("bk", position)
-		  	puts "arr = #{arr.inspect}"
-		  	arr.each_with_index do |element, index|
+			puts "arr przed filtracja = #{arr.inspect}"
+			substract_from_arr = []
+			arr.each do |element|
+		  	  puts "check for unavalible moves - move #{element}"
 		  	  if avalible_moves.include?(element)
-		  	  	bt("bk", element, avalible_moves)
+		  	  	puts "ruch #{element} jest ok"
 		  	  else
-		  	  	puts "#{element} is not in avalible_moves"
+		  	  	puts "ruch #{element} jest nie ok"
+		  	  	substract_from_arr << element
 		  	  end
 		  	end
+			arr -= substract_from_arr
+		  	puts "arr po filtracji = #{arr.inspect}"
+		  	if arr.empty?
+		  	  avalible_moves.clear
+		  	end
+		  	arr.each_with_index do |element, index|
+		  	  puts "elemend of index #{index} = #{element}"
+		  	  if avalible_moves.include?(element)
+		  	  	puts "ruch jest go go"
+		  	  	bt2("bk", element, avalible_moves)
+		  	  	i += 1
+		  	  	puts "#{i}"
+		  	  else
+		  	  	puts "element not in arr"
+		  	  	puts avalible_moves.inspect
+		  	  	arr.delete(element)
+		  	  	puts arr.size
+		  	  end
+		  	end
+		  	puts "i wyszedlem z tego"
+		  	#avalible_moves.clear
+		  	
 		  end
 	  end
 	  puts "avalible_moves empty"
-	  return @branch  
+	  return @branch.inspect  
 	end
 
 	def start_sequence(piece, moves)

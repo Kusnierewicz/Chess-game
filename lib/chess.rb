@@ -49,7 +49,7 @@ module Chess
       #tree.read_tree
       #puts tree.depth_first_search(100, tree.rootnode)
       puts "--------------------------"
-      tree.bt("bk", "a1", full_board)
+      puts tree.bt2("bk", "c3", full_board)
       #g.board.print_board
   	  #g.move(piece: "bk", destination: "f8")
   	  #puts g.select_piece("bk").present_position
