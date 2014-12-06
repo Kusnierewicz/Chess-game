@@ -11,6 +11,8 @@ module Chess
 		  @rootnode = nil
 		  @parent = nil
 		  @children = []
+		  
+
 	  end
 
 	  def set_parent(parent)
@@ -29,7 +31,7 @@ module Chess
 	end
 
   class Tree
-  	attr_accessor :game, :piece, :board
+  	attr_accessor :game, :piece, :board, :bbranch
 
   	def initialize(name, game, piece, board)
   	  @name = name
@@ -37,6 +39,8 @@ module Chess
   	  @piece = piece
   	  @board = board
   	  @branch = []
+  	  @bbranch = []
+  	  @i = 0
   	end
 
   	def build_tree(arr)
@@ -62,80 +66,27 @@ module Chess
 	  puts @board.inspect
 	end
 
-	def bt(piece, position, avalible_moves)
-	  i = 0
+	def bt3(piece, position, avalible_moves)
+	  @i = @i + 1
 	  while avalible_moves.empty? == false
 		  if @branch.empty?
-		  	puts "branch is empty"
-		  	node0 = Chess::Node.new(position)
-		  	puts "node0 value = #{node0.value}"
-		  	node0.id = node0.object_id
-		  	@branch << node0
-		  	puts "#{@branch.inspect}"
-		  	puts "avalible_moves size przed = #{avalible_moves.size}"
-		  	avalible_moves.delete(position)
-		  	puts "position = #{position}"
-		  	puts "avalible_moves size po = #{avalible_moves.size}"
-		  	arr = game.check_avalible_moves_t("bk", position)
-		  	puts "arr = #{arr.inspect}"
-		  	arr.each do |element|
-		  	  puts "elemend = #{element}"
-		  	  	puts "ruch jest go go"
-		  	  	bt("bk", element, avalible_moves)
-		  	  
-		  	end
-		  elsif avalible_moves.include?(position)
-		  	puts "move avalible"
-		  	@branch << instance_variable_set("@node#{@branch.size}", Chess::Node.new(position))
-		  	@branch.last.id = @branch.last.object_id
-		  	puts "position to #{position}"
-		  	puts "--------------------------"
-		  	puts @branch.last.inspect
-		  	puts "--------------------------"
-		  	puts "avalible_moves size przed = #{avalible_moves.size}"
-		  	avalible_moves.delete(position)
-		  	puts "position = #{position}"
-		  	puts "avalible_moves size po = #{avalible_moves.size}"
-		  	@branch.last.id = @branch.last.object_id
-			arr = game.check_avalible_moves_t("bk", position)
-		  	puts "arr = #{arr.inspect}"
-		  	arr.each do |element|
-		  	  puts "elemend = #{element}"
-		  	  	puts "ruch jest go go"
-		  	  	bt("bk", element, avalible_moves)
-		  	  
-		  	end
-		  	puts "i wyszedlem z tego"
-		  	#avalible_moves.clear
-		  else
-		  	puts "#{position} is not in array"
-		  end
-	  end
-	  puts "avalible_moves empty"
-	  return @branch.inspect  
-	end
-
-	def bt2(piece, position, avalible_moves)
-	  i = 0
-	  while avalible_moves.empty? == false
-		  if @branch.empty?
-		  	puts "branch is empty"
+		  	puts "sekcja 1 - branch is empty"
 		  	node0 = Chess::Node.new(position)
 		  	puts "node0 value = #{node0.value}"
 		  	node0.id = node0.object_id
 		  	@branch << node0
 		  	puts "--------------------------"
-		  	puts @branch.last.inspect
-		  	puts @branch.size
+		  	puts "@branch.last.inspect = #{@branch.last.inspect}"
+		  	puts "@branch.size = #{@branch.size}"
 		  	puts "--------------------------"
-		  	puts "avalible_moves size przed = #{avalible_moves.size}"
+		  	puts "avalible_moves size przed usunieciem obecnego ruchu= #{avalible_moves.size}"
 		  	avalible_moves.delete(position)
-		  	puts "avalible_moves size po = #{avalible_moves.size}"
+		  	puts "avalible_moves size po usunieciu obecnego ruchu= #{avalible_moves.size}"
 		  	arr = game.check_avalible_moves_t("bk", position)
 		  	puts "arr przed filtracja = #{arr.inspect}"
 		  	substract_from_arr = []
 		  	arr.each do |element|
-		  	  puts "check for unavalible moves"
+		  	  puts "check for unavalible moves - move #{element}"
 		  	  if avalible_moves.include?(element)
 		  	  	puts "ruch #{element} jest ok"
 		  	  else
@@ -146,34 +97,34 @@ module Chess
 		  	arr -= substract_from_arr
 		  	puts "arr po filtracji = #{arr.inspect}"
 		  	if arr.empty?
+		  	  puts "arr jest pusta, usuwamy reszte ruchow z tablicy"
 		  	  avalible_moves.clear
 		  	end
 		  	arr.each_with_index do |element, index|
 		  	  puts "elemend of index #{index} = #{element}"
 		  	  if avalible_moves.include?(element)
 		  	  	puts "ruch jest go go"
-		  	  	bt2("bk", element, avalible_moves)
-		  	  	i += 1
-		  	  	puts "#{i}"
+		  	  	bt3("bk", element, avalible_moves)
+		  	  	puts "#{@i}"
 		  	  else
-		  	  	puts "element not in arr"
-		  	  	puts avalible_moves.inspect
+		  	  	puts "sekcja 3b - element not avalible"
+		  	  	puts "avalible_moves.inspect = #{avalible_moves.inspect}"
 		  	  	arr.delete(element)
-		  	  	puts arr.size
+		  	  	puts "arr.size = #{arr.size}"
 		  	  end
 		  	end
 		  else
-		  	puts "branch and avalible_moves not empty"
+		  	puts "sekcja 2 - branch and avalible_moves not empty"
 		  	@branch << instance_variable_set("@node#{@branch.size}", Chess::Node.new(position))
 		  	@branch.last.id = @branch.last.object_id
 		  	puts "position to #{position}"
 		  	puts "--------------------------"
-		  	puts @branch.last.inspect
-		  	puts @branch.size
+		  	puts "@branch.last.inspect = #{@branch.last.inspect}"
+		  	puts "@branch.size = #{@branch.size}"
 		  	puts "--------------------------"
-		  	puts "avalible_moves size przed = #{avalible_moves.size}"
+		  	puts "avalible_moves size przed usunieciem obecnego ruchu= #{avalible_moves.size}"
 		  	avalible_moves.delete(position)
-		  	puts "avalible_moves size po = #{avalible_moves.size}"
+		  	puts "avalible_moves size po usunieciu obecnego ruchu= #{avalible_moves.size}"
 		  	@branch.last.id = @branch.last.object_id
 			arr = game.check_avalible_moves_t("bk", position)
 			puts "arr przed filtracja = #{arr.inspect}"
@@ -190,20 +141,21 @@ module Chess
 			arr -= substract_from_arr
 		  	puts "arr po filtracji = #{arr.inspect}"
 		  	if arr.empty?
+		  	  puts "arr jest pusta, usuwamy reszte ruchow z tablicy"
 		  	  avalible_moves.clear
 		  	end
 		  	arr.each_with_index do |element, index|
-		  	  puts "elemend of index #{index} = #{element}"
+		  	  puts "sekcja 2a - elemend in arr[#{index}] = #{element}"
 		  	  if avalible_moves.include?(element)
-		  	  	puts "ruch jest go go"
-		  	  	bt2("bk", element, avalible_moves)
-		  	  	i += 1
-		  	  	puts "#{i}"
+		  	  	puts "sekcja 3a - ruch jest go go"
+		  	  	bt3("bk", element, avalible_moves)
+		  	  	@i += 1
+		  	  	puts "#{@i}"
 		  	  else
-		  	  	puts "element not in arr"
-		  	  	puts avalible_moves.inspect
+		  	  	puts "sekcja 3b - element not avalible"
+		  	  	puts "avalible_moves.inspect = #{avalible_moves.inspect}"
 		  	  	arr.delete(element)
-		  	  	puts arr.size
+		  	  	puts "arr.size = #{arr.size}"
 		  	  end
 		  	end
 		  	puts "i wyszedlem z tego"
@@ -212,62 +164,111 @@ module Chess
 		  end
 	  end
 	  puts "avalible_moves empty"
-	  return @branch.inspect  
+	  puts "branch size = #{@branch.size}"
+	  @bbranch << @branch  
 	end
 
-	def start_sequence(piece, moves)
-	  p = game.select_piece(piece)
-	  position = p.present_position
-	  build_sequence_tree(piece, position, moves)
-	end
-
-	def build_sequence_tree(piece, position, avalible_moves, branch = [])
-	  if branch.empty?
-	  	puts "branch is empty"
-	  	puts "piece position = #{position}"
-	  	node0 = Chess::Node.new(position)
-	  	puts "node0 value = #{node0.value}"
-	  	node0.id = node0.object_id
-	  	branch << node0
-	  	puts "#{branch.inspect}"
-	  	puts "#{avalible_moves.size}"
-	  	avalible_moves.delete(position)
-	  	puts "#{avalible_moves.size}"
+	
+	def bt2(piece, position, avalible_moves)
+	  @i = @i + 1
+	  while avalible_moves.empty? == false
+		  if @branch.empty?
+		  	puts "sekcja 1 - branch is empty"
+		  	node0 = Chess::Node.new(position)
+		  	puts "node0 value = #{node0.value}"
+		  	node0.id = node0.object_id
+		  	@branch << node0
+		  	puts "--------------------------"
+		  	puts "@branch.last.inspect = #{@branch.last.inspect}"
+		  	puts "@branch.size = #{@branch.size}"
+		  	puts "--------------------------"
+		  	puts "avalible_moves size przed usunieciem obecnego ruchu= #{avalible_moves.size}"
+		  	avalible_moves.delete(position)
+		  	puts "avalible_moves size po usunieciu obecnego ruchu= #{avalible_moves.size}"
+		  	arr = game.check_avalible_moves_t("bk", position)
+		  	puts "arr przed filtracja = #{arr.inspect}"
+		  	substract_from_arr = []
+		  	arr.each do |element|
+		  	  puts "check for unavalible moves - move #{element}"
+		  	  if avalible_moves.include?(element)
+		  	  	puts "ruch #{element} jest ok"
+		  	  else
+		  	  	puts "ruch #{element} jest nie ok"
+		  	  	substract_from_arr << element
+		  	  end
+		  	end
+		  	arr -= substract_from_arr
+		  	puts "arr po filtracji = #{arr.inspect}"
+		  	if arr.empty?
+		  	  puts "arr jest pusta, usuwamy reszte ruchow z tablicy"
+		  	  avalible_moves.clear
+		  	end
+		  	arr.each_with_index do |element, index|
+		  	  puts "elemend of index #{index} = #{element}"
+		  	  if avalible_moves.include?(element)
+		  	  	puts "ruch jest go go"
+		  	  	bt2("bk", element, avalible_moves)
+		  	  	puts "#{@i}"
+		  	  else
+		  	  	puts "sekcja 3b - element not avalible"
+		  	  	puts "avalible_moves.inspect = #{avalible_moves.inspect}"
+		  	  	arr.delete(element)
+		  	  	puts "arr.size = #{arr.size}"
+		  	  end
+		  	end
+		  else
+		  	puts "sekcja 2 - branch and avalible_moves not empty"
+		  	@branch << instance_variable_set("@node#{@branch.size}", Chess::Node.new(position))
+		  	@branch.last.id = @branch.last.object_id
+		  	puts "position to #{position}"
+		  	puts "--------------------------"
+		  	puts "@branch.last.inspect = #{@branch.last.inspect}"
+		  	puts "@branch.size = #{@branch.size}"
+		  	puts "--------------------------"
+		  	puts "avalible_moves size przed usunieciem obecnego ruchu= #{avalible_moves.size}"
+		  	avalible_moves.delete(position)
+		  	puts "avalible_moves size po usunieciu obecnego ruchu= #{avalible_moves.size}"
+		  	@branch.last.id = @branch.last.object_id
+			arr = game.check_avalible_moves_t("bk", position)
+			puts "arr przed filtracja = #{arr.inspect}"
+			substract_from_arr = []
+			arr.each do |element|
+		  	  puts "check for unavalible moves - move #{element}"
+		  	  if avalible_moves.include?(element)
+		  	  	puts "ruch #{element} jest ok"
+		  	  else
+		  	  	puts "ruch #{element} jest nie ok"
+		  	  	substract_from_arr << element
+		  	  end
+		  	end
+			arr -= substract_from_arr
+		  	puts "arr po filtracji = #{arr.inspect}"
+		  	if arr.empty?
+		  	  puts "arr jest pusta, usuwamy reszte ruchow z tablicy"
+		  	  avalible_moves.clear
+		  	end
+		  	arr.each_with_index do |element, index|
+		  	  puts "sekcja 2a - elemend in arr[#{index}] = #{element}"
+		  	  if avalible_moves.include?(element)
+		  	  	puts "sekcja 3a - ruch jest go go"
+		  	  	bt2("bk", element, avalible_moves)
+		  	  	@i += 1
+		  	  	puts "#{@i}"
+		  	  else
+		  	  	puts "sekcja 3b - element not avalible"
+		  	  	puts "avalible_moves.inspect = #{avalible_moves.inspect}"
+		  	  	arr.delete(element)
+		  	  	puts "arr.size = #{arr.size}"
+		  	  end
+		  	end
+		  	puts "i wyszedlem z tego"
+		  	#avalible_moves.clear
+		  	
+		  end
 	  end
-	  game.set_piece_pos(piece, position)
-	  arr = game.check_avalible_moves(piece)
-	  puts "arr = #{arr.inspect}"
-	  
-	  if avalible_moves.empty? != true
-	  	
-	  	arr.each_with_index do |element, index|
-	  	  if avalible_moves.include?(element)
-	  	  	branch << instance_variable_set("@node#{branch.size}", Chess::Node.new(element))
-	  	  	branch.last.id = branch.last.object_id
-	  	  	if piece.class == String
-	  	  	  node0.children << branch.last.id
-	  	  	  branch.last.parent = node0.id
-	  	  	else
-	  	  	  piece.children << branch.last.id
-	  	  	  branch.last.parent = piece.id
-	  	  	end
-	  	  	
-	  	  	#puts "piece id = #{piece.id}"
-	  	  	puts "branch.last.inspect = #{branch.last.inspect}"
-	  	  	puts "piece class = #{piece.class}"
-	  	  	
-	  	  		
-	  	  	
-	  	  	avalible_moves.delete(element)
-	  	  	puts "branch size = #{branch.size}"
-	  	  	puts "#{branch.last.value.inspect}"
-	  	  	#build_sequence_tree(piece, branch.last.value, avalible_moves, branch)
-	  	  else
-	  	  	puts "#{element} is not in avalible_moves"
-	  	  end
-	  	end
-  	  end
-  	  print "branch = #{branch.inspect}"
+	  puts "avalible_moves empty"
+	  puts "branch size = #{@branch.size}"
+	  return @branch.inspect  
 	end
 
 	def add_to_tree(new_node, parent_node)
