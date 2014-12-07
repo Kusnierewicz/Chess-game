@@ -99,6 +99,12 @@ module Chess
 		  	if arr.empty?
 		  	  puts "arr jest pusta, usuwamy reszte ruchow z tablicy"
 		  	  avalible_moves.clear
+		  	else
+		  	  arr.each do |element|
+		  	  	@branch << instance_variable_set("@node#{@branch_size}", Chess::Node.new(element))
+		  	  	@branch.last.id = @branch.last.object_id
+		  	  	@node0.children << @branch.last.value
+
 		  	end
 		  	arr.each_with_index do |element, index|
 		  	  puts "elemend of index #{index} = #{element}"
@@ -143,6 +149,12 @@ module Chess
 		  	if arr.empty?
 		  	  puts "arr jest pusta, usuwamy reszte ruchow z tablicy"
 		  	  avalible_moves.clear
+		  	else
+		  	  arr.each do |element|
+		  	  	@branch << instance_variable_set("@node#{@branch_size}", Chess::Node.new(element))
+		  	  	@branch.last.id = @branch.last.object_id
+		  	  	@node0.children
+
 		  	end
 		  	arr.each_with_index do |element, index|
 		  	  puts "sekcja 2a - elemend in arr[#{index}] = #{element}"
