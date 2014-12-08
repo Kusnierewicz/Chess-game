@@ -103,8 +103,9 @@ module Chess
 		  	  arr.each do |element|
 		  	  	@branch << instance_variable_set("@node#{@branch_size}", Chess::Node.new(element))
 		  	  	@branch.last.id = @branch.last.object_id
-		  	  	@node0.children << @branch.last.value
-
+		  	  	node0.children << @branch.last.value
+		  	  	@branch.last.parent = node0.id	
+		  	  end			
 		  	end
 		  	arr.each_with_index do |element, index|
 		  	  puts "elemend of index #{index} = #{element}"
@@ -131,7 +132,7 @@ module Chess
 		  	puts "avalible_moves size przed usunieciem obecnego ruchu= #{avalible_moves.size}"
 		  	avalible_moves.delete(position)
 		  	puts "avalible_moves size po usunieciu obecnego ruchu= #{avalible_moves.size}"
-		  	@branch.last.id = @branch.last.object_id
+		  	last_parent = @branch.last
 			arr = game.check_avalible_moves_t("bk", position)
 			puts "arr przed filtracja = #{arr.inspect}"
 			substract_from_arr = []
@@ -153,8 +154,9 @@ module Chess
 		  	  arr.each do |element|
 		  	  	@branch << instance_variable_set("@node#{@branch_size}", Chess::Node.new(element))
 		  	  	@branch.last.id = @branch.last.object_id
-		  	  	@node0.children
-
+		  	  	last_parent.children << @branch.last.value
+				@branch.last.parent = last_parent
+			  end
 		  	end
 		  	arr.each_with_index do |element, index|
 		  	  puts "sekcja 2a - elemend in arr[#{index}] = #{element}"
