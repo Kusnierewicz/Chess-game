@@ -66,6 +66,81 @@ module Chess
 	  puts @board.inspect
 	end
 
+	def bt4(piece, position, avalible_moves)
+	  @i = @i + 1
+	  while avalible_moves.empty? == false
+		  if @branch.empty?
+		  	node0 = Chess::Node.new(position)
+		  	node0.id = node0.object_id
+		  	@branch << node0
+		  	avalible_moves.delete(position)
+		  	arr = game.check_avalible_moves_t("bk", position)
+		  	substract_from_arr = []
+		  	arr.each do |element|
+		  	  if avalible_moves.include?(element)
+		  	  else
+		  	  	substract_from_arr << element
+		  	  end
+		  	end
+		  	arr -= substract_from_arr
+		  	if arr.empty?
+		  	  avalible_moves.clear
+		  	else
+		  	  arr.each do |element|
+		  	  	@branch << instance_variable_set("@node#{@branch_size}", Chess::Node.new(element))
+		  	  	@branch.last.id = @branch.last.object_id
+		  	  	node0.children << @branch.last.value
+		  	  	@branch.last.parent = node0.id	
+		  	  end			
+		  	end
+		  	arr.each_with_index do |element, index|
+		  	  if avalible_moves.include?(element)
+		  	  	bt4("bk", element, avalible_moves)
+		  	  	puts "#{@i}"
+		  	  else
+		  	  	arr.delete(element)
+
+		  	  end
+		  	end
+		  else
+
+		  	#@branch << instance_variable_set("@node#{@branch.size}", Chess::Node.new(position))
+		  	#@branch.last.id = @branch.last.object_id
+
+		  	avalible_moves.delete(position)
+		  	last_parent = @branch.last
+			arr = game.check_avalible_moves_t("bk", position)
+			substract_from_arr = []
+			arr.each do |element|
+		  	  if avalible_moves.include?(element)
+		  	  else
+		  	  	substract_from_arr << element
+		  	  end
+		  	end
+			arr -= substract_from_arr
+		  	if arr.empty?
+		  	  avalible_moves.clear
+		  	else
+		  	  arr.each do |element|
+		  	  	@branch << instance_variable_set("@node#{@branch_size}", Chess::Node.new(element))
+		  	  	@branch.last.id = @branch.last.object_id
+		  	  	last_parent.children << @branch.last.value
+				@branch.last.parent = last_parent
+			  end
+		  	end
+		  	arr.each_with_index do |element, index|
+		  	  if avalible_moves.include?(element)
+		  	  	bt4("bk", element, avalible_moves)
+		  	  	@i += 1
+		  	  else
+		  	  	arr.delete(element)
+		  	  end
+		  	end		  	
+		  end
+	  end
+	  @bbranch << @branch  
+	end
+
 	def bt3(piece, position, avalible_moves)
 	  @i = @i + 1
 	  while avalible_moves.empty? == false
@@ -122,8 +197,8 @@ module Chess
 		  	end
 		  else
 		  	puts "sekcja 2 - branch and avalible_moves not empty"
-		  	@branch << instance_variable_set("@node#{@branch.size}", Chess::Node.new(position))
-		  	@branch.last.id = @branch.last.object_id
+		  	#@branch << instance_variable_set("@node#{@branch.size}", Chess::Node.new(position))
+		  	#@branch.last.id = @branch.last.object_id
 		  	puts "position to #{position}"
 		  	puts "--------------------------"
 		  	puts "@branch.last.inspect = #{@branch.last.inspect}"
