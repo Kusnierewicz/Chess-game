@@ -153,6 +153,7 @@ module Chess
 		  	puts "--------------------------"
 		  	puts "@branch.last.inspect = #{@branch.last.inspect}"
 		  	puts "@branch.size = #{@branch.size}"
+		  	puts "@bbranch.size = #{@bbranch.size}"
 		  	puts "--------------------------"
 		  	puts "avalible_moves size przed usunieciem obecnego ruchu= #{avalible_moves.size}"
 		  	avalible_moves.delete(position)
@@ -182,12 +183,15 @@ module Chess
 		  	  	@branch.last.parent = node0.id	
 		  	  end			
 		  	end
+		  	puts "!!!!Dodaje pierwszy branch do bbranch"
+		  	@bbranch << @branch
+		  	puts "@bbranch.size = #{@bbranch.size}"
 		  	arr.each_with_index do |element, index|
 		  	  puts "elemend of index #{index} = #{element}"
 		  	  if avalible_moves.include?(element)
 		  	  	puts "ruch jest go go"
 		  	  	bt3("bk", element, avalible_moves)
-		  	  	puts "#{@i}"
+		  	  	puts "i = #{@i}"
 		  	  else
 		  	  	puts "sekcja 3b - element not avalible"
 		  	  	puts "avalible_moves.inspect = #{avalible_moves.inspect}"
@@ -195,6 +199,7 @@ module Chess
 		  	  	puts "arr.size = #{arr.size}"
 		  	  end
 		  	end
+		  	
 		  else
 		  	puts "sekcja 2 - branch and avalible_moves not empty"
 		  	#@branch << instance_variable_set("@node#{@branch.size}", Chess::Node.new(position))
@@ -203,6 +208,7 @@ module Chess
 		  	puts "--------------------------"
 		  	puts "@branch.last.inspect = #{@branch.last.inspect}"
 		  	puts "@branch.size = #{@branch.size}"
+		  	puts "@bbranch.size = #{@bbranch.size}"
 		  	puts "--------------------------"
 		  	puts "avalible_moves size przed usunieciem obecnego ruchu= #{avalible_moves.size}"
 		  	avalible_moves.delete(position)
@@ -230,16 +236,19 @@ module Chess
 		  	  	@branch << instance_variable_set("@node#{@branch_size}", Chess::Node.new(element))
 		  	  	@branch.last.id = @branch.last.object_id
 		  	  	last_parent.children << @branch.last.value
-				@branch.last.parent = last_parent
+				@branch.last.parent = last_parent.id
 			  end
 		  	end
-		  	arr.each_with_index do |element, index|
+		  	puts "KOLEJNY RUCH!!!!!!"
+			@bbranch << @branch
+			puts "@bbranch.size = #{@bbranch.size}"
+			arr.each_with_index do |element, index|
 		  	  puts "sekcja 2a - elemend in arr[#{index}] = #{element}"
 		  	  if avalible_moves.include?(element)
 		  	  	puts "sekcja 3a - ruch jest go go"
 		  	  	bt3("bk", element, avalible_moves)
 		  	  	@i += 1
-		  	  	puts "#{@i}"
+		  	  	puts "i = #{@i}"
 		  	  else
 		  	  	puts "sekcja 3b - element not avalible"
 		  	  	puts "avalible_moves.inspect = #{avalible_moves.inspect}"
@@ -249,12 +258,13 @@ module Chess
 		  	end
 		  	puts "i wyszedlem z tego"
 		  	#avalible_moves.clear
-		  	
+			
 		  end
+		  
 	  end
 	  puts "avalible_moves empty"
 	  puts "branch size = #{@branch.size}"
-	  @bbranch << @branch  
+	  @bbranch 
 	end
 
 	
