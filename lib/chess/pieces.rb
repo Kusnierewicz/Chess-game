@@ -75,10 +75,16 @@ module Chess
 
 	  def self.army
 	  	army = []
-	  	k = Chess::Knight.new(color: "black")
+	  	army << k = Chess::Knight.new(color: "black")
+	  	army << k2 = Chess::Knight.new(color: "black")
+	  	army << w = Chess::Knight.new(color: "white")
+	  	army << w2 = Chess::Knight.new(color: "white")
 	  	set_id(k)
+	  	set_id(k2)
+	  	set_id(w)
+	  	set_id(w2)
 	  	#k2 = Chess::Knight.new(color: "black")	  	
-	  	army << k
+	  	
 	  	#army << k2
 	  	set_starting_position(army)
 	  	army
