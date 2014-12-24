@@ -45,6 +45,9 @@ module Chess
   	  #puts g.select_piece("bk").present_position
   	  g.board.print_board
       g.move(piece: "bk", destination: "g6")
+      puts g.check_avalible_moves("bk")
+      puts "--------------------------"
+      #puts g.check_avalible_moves_t("bk")
       g.board.print_board
   	  #puts g.select_piece("bk").type
   	  #puts g.methods

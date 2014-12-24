@@ -35,7 +35,8 @@ module Chess
     def select_piece(n_value)
       avalible_pieces.each do |piece|
         if piece.name == n_value
-          return piece
+          avalible_to_move << piece
+          return avalible_to_move
         end
       end
     end
@@ -48,7 +49,12 @@ module Chess
       end
     end
 
-    def clean_after_move(piece)
+    def clean_after_move(position)
+      x, y = human_move_to_coordinate(position)
+      board.set_cell(x, y, "  ")
+    end
+
+    def clean_after_move_old(piece)
       p = select_piece(piece)
       unless p.present_position == nil
         x, y = human_move_to_coordinate(p.present_position)
@@ -61,26 +67,34 @@ module Chess
       p.present_position = position    
     end
 
-    def check_avalible_moves(piece)
-      if piece.class == String
-        p = select_piece(piece)
-      else
-        p = piece
-      end
-      puts "p is #{p}"
-      position = human_move_to_coordinate(p.present_position)
-      moves = p.move
-      array = []
-      moves.size.times do |n|
-        proposal = []
-        proposal << (position[0] + moves[n-1][0])
-        proposal << (position[1] + moves[n-1][1])
-        n += 1
-        if comp_move_to_human(proposal)
-          array << comp_move_to_human(proposal)
+    def check_avalible_moves(pieces, destination)
+      valid_array = []
+      if pieces.class == Array
+        pieces.each do |p|
+          puts "valid_array.size = #{valid_array.size}"
+          puts "p is #{p}"
+          puts "p position is #{p.present_position}"
+          position = human_move_to_coordinate(p.present_position)
+          moves = p.move
+          moves_array = []
+          moves.size.times do |n|
+            proposal = []
+            proposal << (position[0] + moves[n-1][0])
+            proposal << (position[1] + moves[n-1][1])
+            n += 1
+            if comp_move_to_human(proposal)
+              moves_array << comp_move_to_human(proposal)
+            end
+          end
+          if moves_array.include?(destination)
+            puts "destination jest w moves_array"
+            valid_array << p
+          end 
         end
+      else
+        puts "blad - pieces to grupa"
       end
-      array
+      valid_array
     end
 
     def check_avalible_moves_t(piece, position2)
@@ -106,9 +120,12 @@ module Chess
     end
 
     def move(input)
+
       piece = input.fetch(:piece)
       destination = input.fetch(:destination)
-      clean_after_move(piece)
+      the_piece = check_avalible_moves(select_piece(piece), destination)
+
+      clean_after_move(piece.present_position)
       x, y = human_move_to_coordinate(destination)
       board.set_cell(x, y, piece)
       set_piece_pos(piece, destination)
