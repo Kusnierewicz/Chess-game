@@ -19,38 +19,27 @@ module Chess
   	  puts "Welcome to chess game"
   	  p = Chess::Player.new(color: "black", name: "Luk")
   	  p2 = Chess::Player.new(color: "white", name: "Poul")
-  	  #k = Chess::Knight.new(color: "black")
-  	  #k.present_position = "d4"
-  	  
-  	  #b = Chess::Board.new
   	  g = Chess::Game.new([p, p2])
-  	  #Piece.set_id(k)
-  	  #Piece.set_starting_position([k])
+
       puts g.avalible_pieces
       puts g.avalible_pieces[1].start_position
 
   	  g.army_setup(g.avalible_pieces)
-  	  #g.board.print_board
-  	  #g.move(piece: "bk", destination: "c6")
-  	  #g.board.print_board
-  	  #g.move(piece: "bk", destination: "h6")
-  	  #g.board.print_board
-  	  #puts g.possible_moves("bk")
+
       p = g.select_piece("bk")
       puts "--------------------------"
-
-    
       g.board.print_board
-  	  #g.move(piece: "bk", destination: "f8")
-  	  #puts g.select_piece("bk").present_position
   	  g.board.print_board
-      g.move(piece: "bk", destination: "g6")
-      puts g.check_avalible_moves("bk")
+
+      g.simple_move(destination: "h6")
+      g.simple_move(destination: "d7")
+      g.simple_move(destination: "a3")
+      g.simple_move(destination: "e2")
+      g.simple_move(destination: "e4")
+      #g.move(piece: "bk", destination: "h6")
       puts "--------------------------"
-      #puts g.check_avalible_moves_t("bk")
+
       g.board.print_board
-  	  #puts g.select_piece("bk").type
-  	  #puts g.methods
 
     end
   end

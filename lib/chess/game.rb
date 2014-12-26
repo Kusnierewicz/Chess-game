@@ -28,17 +28,19 @@ module Chess
         puts "#{piece.start_position}"
         x, y = human_move_to_coordinate(piece.start_position)
         board.set_cell(x, y, piece.name)
-        set_piece_pos(piece.name, piece.start_position)
+        piece.present_position = piece.start_position
       end
     end
 
     def select_piece(n_value)
+      avalible_to_move = []
       avalible_pieces.each do |piece|
         if piece.name == n_value
           avalible_to_move << piece
-          return avalible_to_move
         end
       end
+      puts "ile mamy pionkow o nazwie #{n_value} = #{avalible_to_move.size}"
+      avalible_to_move
     end
 
     def select_piece_by_id(n_value)
@@ -71,9 +73,9 @@ module Chess
       valid_array = []
       if pieces.class == Array
         pieces.each do |p|
-          puts "valid_array.size = #{valid_array.size}"
-          puts "p is #{p}"
-          puts "p position is #{p.present_position}"
+          #puts "valid_array.size = #{valid_array.size}"
+          #puts "p is #{p}"
+          #puts "p position is #{p.present_position}"
           position = human_move_to_coordinate(p.present_position)
           moves = p.move
           moves_array = []
@@ -87,12 +89,16 @@ module Chess
             end
           end
           if moves_array.include?(destination)
-            puts "destination jest w moves_array"
+            #puts "destination jest w moves_array"
             valid_array << p
           end 
         end
+        if valid_array.empty? 
+          
+          return
+        end
       else
-        puts "blad - pieces to grupa"
+        puts "blad danych"
       end
       valid_array
     end
@@ -120,15 +126,52 @@ module Chess
     end
 
     def move(input)
-
       piece = input.fetch(:piece)
       destination = input.fetch(:destination)
-      the_piece = check_avalible_moves(select_piece(piece), destination)
+      pInROfDestination = check_avalible_moves(select_piece(piece), destination)
+      puts "#{pInROfDestination.class}"
+      if pInROfDestination == nil
+        puts "blad - zaden pionek nie moze wykonac takiego ruchu!!"
+      elsif pInROfDestination.size <= 2
+        the_piece = pInROfDestination[0]
+        clean_after_move(the_piece.present_position)
+        x, y = human_move_to_coordinate(destination)
+        board.set_cell(x, y, piece)
+        the_piece.present_position = destination
+      else
+        puts "please select piece to move"
+      end
+    end
 
-      clean_after_move(piece.present_position)
-      x, y = human_move_to_coordinate(destination)
-      board.set_cell(x, y, piece)
-      set_piece_pos(piece, destination)
+    def simple_move(input)
+      destination = input.fetch(:destination)
+      pInROfDestination = check_avalible_moves(avalible_pieces, destination)
+      if pInROfDestination == nil
+        puts "blad - zaden pionek nie moze wykonac takiego ruchu!!"
+      elsif pInROfDestination.size <= 2
+        the_piece = pInROfDestination[0]
+        clean_after_move(the_piece.present_position)
+        x, y = human_move_to_coordinate(destination)
+        board.set_cell(x, y, the_piece.name)
+        the_piece.present_position = destination
+      else
+        puts "please select piece to move"
+      end
+    end
+
+    def complicated_move(input)
+      piece = input.fetch(:piece)
+      destination = input.fetch(:destination)
+      pInROfDestination = check_avalible_moves(select_piece(piece), destination)
+      if pInROfDestination.size <= 2
+        the_piece = pInROfDestination[0]
+        clean_after_move(the_piece.present_position)
+        x, y = human_move_to_coordinate(destination)
+        board.set_cell(x, y, piece)
+        the_piece.present_position = destination
+      else
+        puts "please select piece to move"
+      end
     end
 
   	def get_move(human_move = gets.chomp)
