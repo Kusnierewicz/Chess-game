@@ -35,12 +35,20 @@ module Chess
     def select_piece(n_value)
       avalible_to_move = []
       avalible_pieces.each do |piece|
-        if piece.name == n_value && piece.color == @current_player.color
+        if piece.name == n_value && piece.color == current_player.color
           avalible_to_move << piece
         end
       end
       #puts "ile mamy pionkow o nazwie #{n_value} = #{avalible_to_move.size}"
       avalible_to_move
+    end
+
+    def delete_piece(destination)
+      avalible_pieces.each_with_index do |piece, index|
+        if piece.present_position == destination
+          avalible_pieces.delete_at(index)
+        end
+      end
     end
 
     def select_piece_by_id(n_value)
@@ -69,6 +77,32 @@ module Chess
       p.present_position = position    
     end
 
+    def select_piece_by_present_position(origin)
+      avalible_pieces.each do |piece|
+        if piece.present_position == origin
+          return piece
+        end
+      end
+    end
+
+    def check_destination(destination)
+      avalible_pieces.each do |piece|
+        if piece.present_position == destination && piece.color == current_player.color
+          return false
+        end
+      end
+      return true
+    end
+
+    def check_pawn_attack_destination(destination)
+      avalible_pieces.each do |piece|
+        if piece.present_position == destination && piece.color != current_player.color
+          return true
+        end
+      end
+      return false
+    end
+
     def check_avalible_moves(pieces, destination)
       valid_array = []
       if pieces.class == Array
@@ -78,6 +112,40 @@ module Chess
           #puts "p position is #{p.present_position}"
           position = human_move_to_coordinate(p.present_position)
           moves = p.move
+          moves_array = []
+          moves.size.times do |n|
+            proposal = []
+            proposal << (position[0] + moves[n-1][0])
+            proposal << (position[1] + moves[n-1][1])
+            n += 1
+            if comp_move_to_human(proposal)
+              moves_array << comp_move_to_human(proposal)
+            end
+          end
+          if moves_array.include?(destination)
+            #puts "#{p} moze sie tam ruszyc"
+            valid_array << p
+          end 
+        end
+        if valid_array.empty? 
+          
+          return
+        end
+      else
+        puts "blad danych"
+      end
+      valid_array
+    end
+
+    def check_pawn_attack(pieces, destination)
+      valid_array = []
+      if pieces.class == Array
+        pieces.each do |p|
+          #puts "valid_array.size = #{valid_array.size}"
+          #puts "p is #{p}"
+          #puts "p position is #{p.present_position}"
+          position = human_move_to_coordinate(p.present_position)
+          moves = p.attack
           moves_array = []
           moves.size.times do |n|
             proposal = []
@@ -124,26 +192,35 @@ module Chess
       end
       array
     end
-
+=begin
     def move(input)
       if input.include? :piece
-        complicated_move(input)
+        short_move(input)
       else
         simple_move(input)
       end
     end
-
+=end
     def next_move(input = gets.chomp)
       #possibilities = ["e4", "Ne4", "e7-f6", "Ng8-f6", "0-0", "0-0-0"]
       if input.size > 3
         puts "longer notation"
+        if input.size == 5
+          short_move(piece: "P", destination: input[3..4], origin: input[0..1])
+        elsif input.size == 6
+          short_move(piece: "#{input[0]}", destination: input[3..4], origin: input[0..1])
+        else
+          #puts "this is not a valid move!"
+          return false
+        end
       else
         if input.size == 2
-          complicated_move(piece: "P", destination: input)
+          short_move(piece: "P", destination: input)
         elsif input.size == 3
-          complicated_move(piece: "#{input[0]}", destination: "#{input[1..2]}")
+          short_move(piece: "#{input[0]}", destination: "#{input[1..2]}")
         else
-          puts "this is not a valid move!"
+          #puts "this is not a valid move!"
+          return false
         end
       end
     end
@@ -164,20 +241,69 @@ module Chess
       end
     end
 
-    def complicated_move(input)
+    def short_move(input)
       piece = "#{@current_player.color[0]}#{input.fetch(:piece)}"
       destination = input.fetch(:destination)
-      pInROfDestination = check_avalible_moves(select_piece(piece), destination)
-      if pInROfDestination == nil
-        puts "blad - zaden pionek nie moze wykonac takiego ruchu!!"
-      elsif pInROfDestination.size <= 2
-        the_piece = pInROfDestination[0]
+      if input.include?(:origin)
+        origin = input.fetch(:origin)
+        delete_piece(destination)
+        the_piece = select_piece_by_present_position(origin)
         clean_after_move(the_piece.present_position)
         x, y = human_move_to_coordinate(destination)
         board.set_cell(x, y, piece)
         the_piece.present_position = destination
-      else
-        puts "please select piece to move"
+        return true
+      end
+      pInROfDestination = check_avalible_moves(select_piece(piece), destination)
+      #puts pInROfDestination.size
+      if pInROfDestination == nil && piece[1] == "P"
+        pInROfDestination = check_pawn_attack(select_piece(piece), destination)
+        if pInROfDestination == nil
+          #puts "blad - zaden pionek nie moze wykonac takiego ruchu!!"
+          return false
+        elsif pInROfDestination.size == 1
+          if check_pawn_attack_destination(destination)
+            delete_piece(destination)
+            the_piece = pInROfDestination[0]
+            clean_after_move(the_piece.present_position)
+            x, y = human_move_to_coordinate(destination)
+            board.set_cell(x, y, piece)
+            the_piece.present_position = destination
+            return true
+          else
+            #puts "nie mozesz atakowac pustego pola pionkiem ani ustawiac dwoch pionkow na jednym miejscu"
+            return false
+          end
+        elsif pInROfDestination.size > 1
+          if check_pawn_attack_destination(destination)
+            puts "wiecej niz 1 pionek moze sie ruszyc na wybrane pole. Uzyj raz jeszcze dluzszej komendy np. 'e7-f6', 'Ng8-f6'"
+            return false
+          else
+          #puts "please select piece to move"
+            return false
+          end
+        end
+      elsif pInROfDestination.size == 1
+        if check_destination(destination)
+          delete_piece(destination)
+          the_piece = pInROfDestination[0]
+          clean_after_move(the_piece.present_position)
+          x, y = human_move_to_coordinate(destination)
+          board.set_cell(x, y, piece)
+          the_piece.present_position = destination
+          return true
+        else
+          #puts "nie mozesz miec dwoch figur na jednym polu"
+          return false
+        end
+      elsif pInROfDestination.size > 1
+        if check_destination(destination)
+          puts "wiecej niz 1 pionek moze sie ruszyc na wybrane pole. Uzyj raz jeszcze dluzszej komendy np. 'e7-f6', 'Ng8-f6'"
+          return false
+        else
+        #puts "please select piece to move"
+          return false
+        end
       end
     end
 
@@ -348,10 +474,14 @@ module Chess
   	  puts "#{current_player.name} has #{current_player.color} pieces"
   	  while true
   	  	#board.formatted_grid
-        board.print_board #
+        board.print_board 
   	  	puts ""
   	  	puts solicit_move
-  	  	next_move
+  	  	r = next_move
+        while r != true
+          puts "to nie jest poprawny ruch - sprobuj ponownie"
+          r = next_move
+        end
   	  	#board.set_cell(x, y, current_player.color)
   	  	#if board.game_over
   	  	#  puts game_over_message

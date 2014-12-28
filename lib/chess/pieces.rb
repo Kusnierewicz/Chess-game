@@ -5,6 +5,15 @@ module Chess
 	  	
 	  end
 
+	  def remove(destination)
+		army.each do |p|
+		  if p.present_position == destination
+		  	p = nil
+		  end
+		end
+	  end
+
+
 	  def self.possible_moves(type)
 
 	  end
@@ -117,7 +126,7 @@ module Chess
 	end
 
 	class King < Piece
-	  attr_reader :color, :type, :move, :name, :possible_destination
+	  attr_reader :color, :type, :move, :attack, :name, :possible_destination
 	  attr_accessor :present_position, :start_position, :id, :possible_destination
 	  def initialize(input)
 	  	@color = input.fetch(:color)
@@ -133,7 +142,7 @@ module Chess
 	end
 
 	class Queen < Piece
-	  attr_reader :color, :type, :move, :name, :possible_destination
+	  attr_reader :color, :type, :move, :attack, :name, :possible_destination
 	  attr_accessor :present_position, :start_position, :id, :possible_destination
 	  def initialize(input)
 	  	@color = input.fetch(:color)
@@ -149,7 +158,7 @@ module Chess
 	end
 
 	class Rook < Piece
-	  attr_reader :color, :type, :move, :name, :possible_destination
+	  attr_reader :color, :type, :move, :attack, :name, :possible_destination
 	  attr_accessor :present_position, :start_position, :id, :possible_destination
 	  def initialize(input)
 	  	@color = input.fetch(:color)
@@ -165,7 +174,7 @@ module Chess
 	end
 
 	class Bishop < Piece
-	  attr_reader :color, :type, :move, :name, :possible_destination
+	  attr_reader :color, :type, :move, :attack, :name, :possible_destination
 	  attr_accessor :present_position, :start_position, :id, :possible_destination
 	  def initialize(input)
 	  	@color = input.fetch(:color)
@@ -181,7 +190,7 @@ module Chess
 	end
 
 	class Knight < Piece
-	  attr_reader :color, :type, :move, :name, :possible_destination
+	  attr_reader :color, :type, :move, :attack, :name, :possible_destination
 	  attr_accessor :present_position, :start_position, :id, :possible_destination
 	  def initialize(input)
 	  	@color = input.fetch(:color)
@@ -197,17 +206,17 @@ module Chess
 	end
 
 	class Pawn < Piece
-	  attr_reader :color, :type, :move, :name, :possible_destination
+	  attr_reader :color, :type, :move, :attack, :name, :possible_destination
 	  attr_accessor :present_position, :start_position, :id, :possible_destination
 	  def initialize(input)
 	  	@color = input.fetch(:color)
 	  	@type = "pawn"
 	  	@id = nil
-	  	@start_position = "a2"
+	  	@start_position = nil
 	  	@present_position = nil
 	  	@possible_destination = nil
-	  	@move = [[2,0],[1,0],[-2,0],[-1,0],[-1,1],[1,-1],[1,1],[-1,-1]]
-	  	@attack = @move
+	  	@move = [[2,0],[1,0],[-2,0],[-1,0]]
+	  	@attack = [[-1,1],[1,-1],[1,1],[-1,-1]]
 	  	@name = "#{@color[0]}#{@type[0].upcase}"
 	  end
 	end
