@@ -22,7 +22,7 @@ module Chess
 	  def self.set_starting_position(army)
 	  	pawn = { "white" => ["a2","b2","c2","d2","e2","f2","g2","h2"], "black" => ["a7","b7","c7","d7","e7","f7","g7","h7"]}
 	  	rook = { "white" => ["a1","h1"], "black" => ["a8","h8"]}
-	  	bishop = { "white" => ["c1","f1"], "black" => ["c8","g8"]}
+	  	bishop = { "white" => ["c1","f1"], "black" => ["c8","f8"]}
 	  	knight = { "white" => ["b1","g1"], "black" => ["b8","g8"]}
 	  	queen = { "white" => ["d1"], "black" => ["d8"]}
 	  	king = { "white" => ["e1"], "black" => ["e8"]}
@@ -31,7 +31,6 @@ module Chess
 	  	  pawn.each_key do |key|
 	  	   if key == piece.color
 	  	   	 piece.start_position = pawn[key].pop
-
 	  	   end
 	  	  end
 	  	elsif piece.type == "rook"
@@ -69,24 +68,48 @@ module Chess
 	  	end
 	  end
 
-	  def self.set_id(piece)
-	  	piece.id = piece.object_id
+	  def self.set_id(army)
+	  	army.each do |piece|
+	  	  piece.id = piece.object_id
+	  	end
 	  end
 
 	  def self.army
 	  	army = []
+
+	  	pawn = ["white", "white", "white", "white", "white", "white", "white", "white", "black", "black", "black", "black", "black", "black", "black", "black"]
+	  	rook = ["white", "white", "black", "black"]
+	  	bishop = ["white", "white", "black", "black"]
+	  	knight = ["white", "white", "black", "black"]
+	  	queen = ["white", "black"]
+	  	king = ["white", "black"]
 	  	
-	  	army << k = Chess::Knight.new(color: "black")
-	  	army << k2 = Chess::Knight.new(color: "black")
-	  	army << w = Chess::Knight.new(color: "white")
-	  	army << w2 = Chess::Knight.new(color: "white")
-	  	set_id(k)
-	  	set_id(k2)
-	  	set_id(w)
-	  	set_id(w2)
-	  	#k2 = Chess::Knight.new(color: "black")	  	
-	  	
-	  	#army << k2
+	  	16.times do
+	  	  color = pawn.pop
+	  	  army << k = Chess::Pawn.new(color: color)
+	  	end
+	  	4.times do
+	  	  color = rook.pop
+	  	  army << k = Chess::Rook.new(color: color)
+	  	end
+	  	4.times do
+	  	  color = bishop.pop
+	  	  army << k = Chess::Bishop.new(color: color)
+	  	end
+	  	4.times do
+	  	  color = knight.pop
+	  	  army << k = Chess::Knight.new(color: color)
+	  	end
+	  	2.times do
+	  	  color = queen.pop
+	  	  army << k = Chess::Queen.new(color: color)
+	  	end
+	  	2.times do
+	  	  color = king.pop
+	  	  army << k = Chess::King.new(color: color)
+	  	end
+
+	  	set_id(army)
 	  	set_starting_position(army)
 	  	army
 	  end
@@ -119,7 +142,7 @@ module Chess
 	  	@start_position = nil
 	  	@present_position = nil
 	  	@possible_destination = nil
-	  	@move = "two ahead one on the side"
+	  	@move = [[1,1],[2,2],[3,3],[4,4],[5,5],[6,6],[7,7],[8,8],[-1,-1],[-2,-2],[-3,-3],[-4,-4],[-5,-5],[-6,-6],[-7,-7],[-8,-8],[1,-1],[2,-2],[3,-3],[4,-4],[5,-5],[6,-6],[7,-7],[8,-8],[-1,1],[-2,2],[-3,3],[-4,4],[-5,5],[-6,6],[-7,7],[-8,8],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],[7,0],[8,0],[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[0,8],[-1,0],[-2,0],[-3,0],[-4,0],[-5,0],[-6,0],[-7,0],[-8,0],[0,-1],[0,-2],[0,-3],[0,-4],[0,-5],[0,-6],[0,-7],[0,-8]]
 	  	@attack = @move
 	  	@name = "#{@color[0]}#{@type[0].upcase}"
 	  end
@@ -135,7 +158,7 @@ module Chess
 	  	@start_position = nil
 	  	@present_position = nil
 	  	@possible_destination = nil
-	  	@move = "two ahead one on the side"
+	  	@move = [[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],[7,0],[8,0],[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[0,8],[-1,0],[-2,0],[-3,0],[-4,0],[-5,0],[-6,0],[-7,0],[-8,0],[0,-1],[0,-2],[0,-3],[0,-4],[0,-5],[0,-6],[0,-7],[0,-8]]
 	  	@attack = @move
 	  	@name = "#{@color[0]}#{@type[0].upcase}"
 	  end
@@ -151,7 +174,7 @@ module Chess
 	  	@start_position = nil
 	  	@present_position = nil
 	  	@possible_destination = nil
-	  	@move = nil
+	  	@move = [[1,1],[2,2],[3,3],[4,4],[5,5],[6,6],[7,7],[8,8],[-1,-1],[-2,-2],[-3,-3],[-4,-4],[-5,-5],[-6,-6],[-7,-7],[-8,-8],[1,-1],[2,-2],[3,-3],[4,-4],[5,-5],[6,-6],[7,-7],[8,-8],[-1,1],[-2,2],[-3,3],[-4,4],[-5,5],[-6,6],[-7,7],[-8,8]]
 	  	@attack = @move
 	  	@name = "#{@color[0]}#{@type[0].upcase}"
 	  end
@@ -169,7 +192,7 @@ module Chess
 	  	@possible_destination = nil
 	  	@move = [[-2,-1],[-1,-2],[1,-2],[2,-1],[1,2],[2,1],[-1,2],[-2,1]]
 	  	@attack = @move
-	  	@name = "#{@color[0]}#{@type[0]}"
+	  	@name = "#{@color[0]}N"
 	  end
 	end
 

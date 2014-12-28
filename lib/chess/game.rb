@@ -5,8 +5,8 @@ module Chess
   	def initialize(players, board = Board.new, pieces = Piece.army)
   	  @players = players
   	  @board = board
-  	  @current_player, @other_player = players.shuffle
       @avalible_pieces = pieces
+      @current_player, @other_player = players[0], players[1]
   	end
 
   	def switch_players
@@ -14,7 +14,7 @@ module Chess
   	end
 
   	def solicit_move
-  	  "#{current_player.name}: Enter a number between 1 and 9 to make your move"
+  	  "#{current_player.name}, make your move!"
   	end
 
   	def game_over_message
@@ -22,10 +22,10 @@ module Chess
   	end
 
     def army_setup(army)
-      puts "start"
+      #puts "start"
       avalible_pieces.each do |piece|
-        puts "getting #{piece}"
-        puts "#{piece.start_position}"
+        #puts "getting #{piece}"
+        #puts "#{piece.start_position}"
         x, y = human_move_to_coordinate(piece.start_position)
         board.set_cell(x, y, piece.name)
         piece.present_position = piece.start_position
@@ -35,11 +35,11 @@ module Chess
     def select_piece(n_value)
       avalible_to_move = []
       avalible_pieces.each do |piece|
-        if piece.name == n_value
+        if piece.name == n_value && piece.color == @current_player.color
           avalible_to_move << piece
         end
       end
-      puts "ile mamy pionkow o nazwie #{n_value} = #{avalible_to_move.size}"
+      #puts "ile mamy pionkow o nazwie #{n_value} = #{avalible_to_move.size}"
       avalible_to_move
     end
 
@@ -126,20 +126,25 @@ module Chess
     end
 
     def move(input)
-      piece = input.fetch(:piece)
-      destination = input.fetch(:destination)
-      pInROfDestination = check_avalible_moves(select_piece(piece), destination)
-      puts "#{pInROfDestination.class}"
-      if pInROfDestination == nil
-        puts "blad - zaden pionek nie moze wykonac takiego ruchu!!"
-      elsif pInROfDestination.size <= 2
-        the_piece = pInROfDestination[0]
-        clean_after_move(the_piece.present_position)
-        x, y = human_move_to_coordinate(destination)
-        board.set_cell(x, y, piece)
-        the_piece.present_position = destination
+      if input.include? :piece
+        complicated_move(input)
       else
-        puts "please select piece to move"
+        simple_move(input)
+      end
+    end
+
+    def next_move(input = gets.chomp)
+      #possibilities = ["e4", "Ne4", "e7-f6", "Ng8-f6", "0-0", "0-0-0"]
+      if input.size > 3
+        puts "longer notation"
+      else
+        if input.size == 2
+          complicated_move(piece: "P", destination: input)
+        elsif input.size == 3
+          complicated_move(piece: "#{input[0]}", destination: "#{input[1..2]}")
+        else
+          puts "this is not a valid move!"
+        end
       end
     end
 
@@ -160,10 +165,12 @@ module Chess
     end
 
     def complicated_move(input)
-      piece = input.fetch(:piece)
+      piece = "#{@current_player.color[0]}#{input.fetch(:piece)}"
       destination = input.fetch(:destination)
       pInROfDestination = check_avalible_moves(select_piece(piece), destination)
-      if pInROfDestination.size <= 2
+      if pInROfDestination == nil
+        puts "blad - zaden pionek nie moze wykonac takiego ruchu!!"
+      elsif pInROfDestination.size <= 2
         the_piece = pInROfDestination[0]
         clean_after_move(the_piece.present_position)
         x, y = human_move_to_coordinate(destination)
@@ -338,20 +345,21 @@ module Chess
     end
 
   	def play
-  	  puts "#{current_player.name} has randomly been selected as the first player"
+  	  puts "#{current_player.name} has #{current_player.color} pieces"
   	  while true
   	  	#board.formatted_grid
+        board.print_board #
   	  	puts ""
   	  	puts solicit_move
-  	  	x, y = get_move
-  	  	board.set_cell(x, y, current_player.color)
-  	  	if board.game_over
-  	  	  puts game_over_message
+  	  	next_move
+  	  	#board.set_cell(x, y, current_player.color)
+  	  	#if board.game_over
+  	  	#  puts game_over_message
   	  	  #board.formatted_grid
-  	  	  return
-  	  	else
-  	  	  switch_players
-  	  	end
+  	  	#  return
+  	  	#else
+  	  	switch_players
+  	  	#end
   	  end
   	end
 
