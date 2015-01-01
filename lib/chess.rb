@@ -42,6 +42,9 @@ module Chess
       frank = Chess::Player.new({color: "black", name: "frank"})
       players = [bob, frank]
       g = Chess::Game.new(players)
+      #puts g.check_mode
+      #g.change_check_mode
+      #puts g.check_mode
       #puts g.avalible_pieces.inspect
       g.army_setup(g.avalible_pieces)
       g.play
