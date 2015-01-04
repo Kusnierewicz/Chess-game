@@ -85,29 +85,29 @@ module Chess
 	  	queen = ["white", "black"]
 	  	king = ["white", "black"]
 	  	
-	  	16.times do
+	  	16.times do |a|
 	  	  color = pawn.pop
-	  	  army << k = Chess::Pawn.new(color: color)
+	  	  army << instance_variable_set("@p#{a}", Chess::Pawn.new(color: color))
 	  	end
-	  	4.times do
+	  	4.times do |a|
 	  	  color = rook.pop
-	  	  army << k = Chess::Rook.new(color: color)
+	  	  army << instance_variable_set("@r#{a}", Chess::Rook.new(color: color))
 	  	end
-	  	4.times do
+	  	4.times do |a|
 	  	  color = bishop.pop
-	  	  army << k = Chess::Bishop.new(color: color)
+	  	  army << instance_variable_set("@b#{a}", Chess::Bishop.new(color: color))
 	  	end
-	  	4.times do
+	  	4.times do |a|
 	  	  color = knight.pop
-	  	  army << k = Chess::Knight.new(color: color)
+	  	  army << instance_variable_set("@n#{a}", Chess::Knight.new(color: color))
 	  	end
-	  	2.times do
+	  	2.times do |a|
 	  	  color = queen.pop
-	  	  army << k = Chess::Queen.new(color: color)
+	  	  army << instance_variable_set("@q#{a}", Chess::Queen.new(color: color))
 	  	end
-	  	2.times do
+	  	2.times do |a|
 	  	  color = king.pop
-	  	  army << k = Chess::King.new(color: color)
+	  	  army << instance_variable_set("@k#{a}", Chess::King.new(color: color))
 	  	end
 
 	  	set_id(army)
@@ -118,15 +118,16 @@ module Chess
 	end
 
 	class King < Piece
-	  attr_reader :color, :type, :move, :attack, :name, :possible_destination, :n_of_moves, :moves_made
-	  attr_accessor :present_position, :start_position, :id, :possible_destination, :n_of_moves, :moves_made
+	  attr_reader :color, :type, :move, :attack, :name, :possible_attack_destination, :n_of_moves, :moves_made, :possible_move_destination
+	  attr_accessor :present_position, :start_position, :id, :possible_attack_destination, :n_of_moves, :moves_made, :possible_move_destination
 	  def initialize(input)
 	  	@color = input.fetch(:color)
 	  	@type = "king"
 	  	@id = nil
 	  	@start_position = nil
 	  	@present_position = nil
-	  	@possible_destination = nil
+	  	@possible_attack_destination = nil 
+	  	@possible_move_destination = nil
 	  	@move = [[1,0],[-1,0],[0,1],[0,-1],[-1,1],[1,-1],[1,1],[-1,-1]]
 	  	@attack = @move
 	  	@name = "#{@color[0]}#{@type[0].upcase}"
@@ -136,15 +137,16 @@ module Chess
 	end
 
 	class Queen < Piece
-	  attr_reader :color, :type, :move, :attack, :name, :possible_destination, :n_of_moves, :moves_made
-	  attr_accessor :present_position, :start_position, :id, :possible_destination, :n_of_moves, :moves_made
+	  attr_reader :color, :type, :move, :attack, :name, :possible_attack_destination, :n_of_moves, :moves_made, :possible_move_destination
+	  attr_accessor :present_position, :start_position, :id, :possible_attack_destination, :n_of_moves, :moves_made, :possible_move_destination
 	  def initialize(input)
 	  	@color = input.fetch(:color)
 	  	@type = "queen"
 	  	@id = nil
 	  	@start_position = nil
 	  	@present_position = nil
-	  	@possible_destination = nil
+	  	@possible_attack_destination = nil 
+	  	@possible_move_destination = nil
 	  	@move = [[1,1],[2,2],[3,3],[4,4],[5,5],[6,6],[7,7],[8,8],[-1,-1],[-2,-2],[-3,-3],[-4,-4],[-5,-5],[-6,-6],[-7,-7],[-8,-8],[1,-1],[2,-2],[3,-3],[4,-4],[5,-5],[6,-6],[7,-7],[8,-8],[-1,1],[-2,2],[-3,3],[-4,4],[-5,5],[-6,6],[-7,7],[-8,8],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],[7,0],[8,0],[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[0,8],[-1,0],[-2,0],[-3,0],[-4,0],[-5,0],[-6,0],[-7,0],[-8,0],[0,-1],[0,-2],[0,-3],[0,-4],[0,-5],[0,-6],[0,-7],[0,-8]]
 	  	@attack = @move
 	  	@name = "#{@color[0]}#{@type[0].upcase}"
@@ -154,15 +156,16 @@ module Chess
 	end
 
 	class Rook < Piece
-	  attr_reader :color, :type, :move, :attack, :name, :possible_destination, :n_of_moves, :moves_made
-	  attr_accessor :present_position, :start_position, :id, :possible_destination, :n_of_moves, :moves_made
+	  attr_reader :color, :type, :move, :attack, :name, :possible_attack_destination, :n_of_moves, :moves_made, :possible_move_destination
+	  attr_accessor :present_position, :start_position, :id, :possible_attack_destination, :n_of_moves, :moves_made, :possible_move_destination
 	  def initialize(input)
 	  	@color = input.fetch(:color)
 	  	@type = "rook"
 	  	@id = nil
 	  	@start_position = nil
 	  	@present_position = nil
-	  	@possible_destination = nil
+	  	@possible_attack_destination = nil 
+	  	@possible_move_destination = nil
 	  	@move = [[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],[7,0],[8,0],[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[0,8],[-1,0],[-2,0],[-3,0],[-4,0],[-5,0],[-6,0],[-7,0],[-8,0],[0,-1],[0,-2],[0,-3],[0,-4],[0,-5],[0,-6],[0,-7],[0,-8]]
 	  	@attack = @move
 	  	@name = "#{@color[0]}#{@type[0].upcase}"
@@ -172,15 +175,16 @@ module Chess
 	end
 
 	class Bishop < Piece
-	  attr_reader :color, :type, :move, :attack, :name, :possible_destination, :n_of_moves, :moves_made
-	  attr_accessor :present_position, :start_position, :id, :possible_destination, :n_of_moves, :moves_made
+	  attr_reader :color, :type, :move, :attack, :name, :possible_attack_destination, :n_of_moves, :moves_made, :possible_move_destination
+	  attr_accessor :present_position, :start_position, :id, :possible_attack_destination, :n_of_moves, :moves_made, :possible_move_destination
 	  def initialize(input)
 	  	@color = input.fetch(:color)
 	  	@type = "bishop"
 	  	@id = nil
 	  	@start_position = nil
 	  	@present_position = nil
-	  	@possible_destination = nil
+	  	@possible_attack_destination = nil 
+	  	@possible_move_destination = nil
 	  	@move = [[1,1],[2,2],[3,3],[4,4],[5,5],[6,6],[7,7],[8,8],[-1,-1],[-2,-2],[-3,-3],[-4,-4],[-5,-5],[-6,-6],[-7,-7],[-8,-8],[1,-1],[2,-2],[3,-3],[4,-4],[5,-5],[6,-6],[7,-7],[8,-8],[-1,1],[-2,2],[-3,3],[-4,4],[-5,5],[-6,6],[-7,7],[-8,8]]
 	  	@attack = @move
 	  	@name = "#{@color[0]}#{@type[0].upcase}"
@@ -190,15 +194,16 @@ module Chess
 	end
 
 	class Knight < Piece
-	  attr_reader :color, :type, :move, :attack, :name, :possible_destination, :n_of_moves, :moves_made
-	  attr_accessor :present_position, :start_position, :id, :possible_destination, :n_of_moves, :moves_made
+	  attr_reader :color, :type, :move, :attack, :name, :possible_attack_destination, :n_of_moves, :moves_made, :possible_move_destination
+	  attr_accessor :present_position, :start_position, :id, :possible_attack_destination, :n_of_moves, :moves_made, :possible_move_destination
 	  def initialize(input)
 	  	@color = input.fetch(:color)
 	  	@type = "knight"
 	  	@id = nil
 	  	@start_position = nil
 	  	@present_position = nil
-	  	@possible_destination = nil
+	  	@possible_attack_destination = nil 
+	  	@possible_move_destination = nil
 	  	@move = [[-2,-1],[-1,-2],[1,-2],[2,-1],[1,2],[2,1],[-1,2],[-2,1]]
 	  	@attack = @move
 	  	@name = "#{@color[0]}N"
@@ -208,15 +213,16 @@ module Chess
 	end
 
 	class Pawn < Piece
-	  attr_reader :color, :type, :move, :attack, :name, :possible_destination, :n_of_moves, :moves_made
-	  attr_accessor :present_position, :start_position, :id, :possible_destination, :n_of_moves, :moves_made
+	  attr_reader :color, :type, :move, :attack, :name, :possible_attack_destination, :n_of_moves, :moves_made, :possible_move_destination
+	  attr_accessor :present_position, :start_position, :id, :possible_attack_destination, :n_of_moves, :moves_made, :possible_move_destination
 	  def initialize(input)
 	  	@color = input.fetch(:color)
 	  	@type = "pawn"
 	  	@id = nil
 	  	@start_position = nil
 	  	@present_position = nil
-	  	@possible_destination = nil
+	  	@possible_attack_destination = nil 
+	  	@possible_move_destination = nil
 	  	@move = [[2,0],[1,0],[-2,0],[-1,0]]
 	  	@attack = [[-1,1],[1,-1],[1,1],[-1,-1]]
 	  	@name = "#{@color[0]}#{@type[0].upcase}"

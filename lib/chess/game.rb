@@ -36,14 +36,19 @@ module Chess
     def activate_check_mode
       opponentKing = select_other_piece("#{@other_player.color[0]}K")
       destination = opponentKing[0].present_position
-      #puts "opponent's king is on #{destination}"
       check = check_avalible_moves(avalible_pieces, destination)
-      if check == false
-        @check_mode = false
+      if check
+        check.each do |p|
+          if check_if_king_in_reach(p.present_position, destination)
+            puts "At least one piece that is checking the opponent King = #{p.name} @ #{p.present_position}"
+            @check_mode = true
+            puts "Check!"
+            return true
+          end
+        end
       else
-        puts "Pieces that are checking the opponent King = #{check.inspect}"
-        @check_mode = true
-        puts "Check!"
+        @check_mode = false 
+        return false
       end
     end
 
@@ -102,6 +107,501 @@ module Chess
     def clean_after_move(position)
       x, y = human_move_to_coordinate(position)
       board.set_cell(x, y, "  ")
+    end
+
+    def check_route(sp, ep)
+      ok = []
+      sp, ep = human_move_to_coordinate(sp), human_move_to_coordinate(ep)
+      x = ep[0] - sp[0] 
+      y = ep[1] - sp[1]
+      if sp[0] == ep[0] || sp[1] == ep[1]
+        #puts "ruch poziomy lub pionowy"
+        nm = sp
+        cx = 0
+        cy = 0
+        until nm == ep || cx == -10 || cx == 10
+          cx = x == 0 ? 0 : x > 0 ? 1 : -1
+          cy = y == 0 ? 0 : y > 0 ? 1 : -1
+          nm[0] += cx
+          nm[1] += cy
+          destination = comp_move_to_human(nm)
+          if check_pawn_move_destination(destination)
+            ok << destination
+          else
+            return false
+          end
+        end
+        return true
+      elsif x.abs == y.abs
+        #puts "ruch na ukos"
+        nm = sp
+        cx = 0
+        cy = 0
+        until nm == ep || cx == -15 || cx == 15
+          cx = x == 0 ? 0 : x > 0 ? 1 : -1
+          cy = y == 0 ? 0 : y > 0 ? 1 : -1
+          nm[0] += cx
+          nm[1] += cy
+          destination = comp_move_to_human(nm)
+          if check_pawn_move_destination(destination)
+            ok << destination
+          else
+            return false
+          end
+        end
+        return true
+      else
+        #puts "ruch konia"
+        return true
+      end
+    end
+
+    def check_future_attack_route(sp, ep)
+      #definicja stworzona na potrzeby sytuacji w ktorej bishop chroni krolowa i krol z tego powodu nie moze jej zbiz
+      ok = []
+      sp, ep = human_move_to_coordinate(sp), human_move_to_coordinate(ep)
+      x = ep[0] - sp[0] 
+      y = ep[1] - sp[1]
+      if sp[0] == ep[0] || sp[1] == ep[1]
+        #puts "ruch poziomy lub pionowy"
+        nm = sp
+        cx = 0
+        cy = 0
+        until nm == ep || cx == -10 || cx == 10
+          cx = x == 0 ? 0 : x > 0 ? 1 : -1
+          cy = y == 0 ? 0 : y > 0 ? 1 : -1
+          nm[0] += cx
+          nm[1] += cy
+          destination = comp_move_to_human(nm)
+          if check_destination(destination) || ep == destination
+            ok << destination
+          else
+            return false
+          end
+        end
+        return true
+      elsif x.abs == y.abs
+        #puts "ruch na ukos"
+        nm = sp
+        cx = 0
+        cy = 0
+        until nm == ep || cx == -15 || cx == 15
+          cx = x == 0 ? 0 : x > 0 ? 1 : -1
+          cy = y == 0 ? 0 : y > 0 ? 1 : -1
+          nm[0] += cx
+          nm[1] += cy
+          destination = comp_move_to_human(nm)
+          if check_destination(destination) || ep == destination
+            ok << destination
+          else
+            return false
+          end
+        end
+        return true
+      else
+        #puts "ruch konia"
+        return true
+      end
+    end
+
+    def check_attack_route(sp, ep)
+      ok = []
+      sp, ep = human_move_to_coordinate(sp), human_move_to_coordinate(ep)
+      x = ep[0] - sp[0] 
+      y = ep[1] - sp[1]
+      if sp[0] == ep[0] || sp[1] == ep[1]
+        #puts "ruch poziomy lub pionowy"
+        nm = sp
+        cx = 0
+        cy = 0
+        until nm == ep || cx == -10 || cx == 10
+          cx = x == 0 ? 0 : x > 0 ? 1 : -1
+          cy = y == 0 ? 0 : y > 0 ? 1 : -1
+          nm[0] += cx
+          nm[1] += cy
+          destination = comp_move_to_human(nm)
+          if check_destination(destination)
+            ok << destination
+          else
+            return false
+          end
+        end
+        return true
+      elsif x.abs == y.abs
+        #puts "ruch na ukos"
+        nm = sp
+        cx = 0
+        cy = 0
+        until nm == ep || cx == -15 || cx == 15
+          cx = x == 0 ? 0 : x > 0 ? 1 : -1
+          cy = y == 0 ? 0 : y > 0 ? 1 : -1
+          nm[0] += cx
+          nm[1] += cy
+          destination = comp_move_to_human(nm)
+          if check_destination(destination)
+            ok << destination
+          else
+            return false
+          end
+        end
+        return true
+      else
+        #puts "ruch konia"
+        return true
+      end
+    end
+
+    def set_all_avalible_attacks(p)
+      position = human_move_to_coordinate(p.present_position)
+      if p.type == "pawn"
+        moves = p.attack
+      else
+        moves = p.move
+      end
+      if p.type == "pawn" && p.color == "white"
+        moves -= [[1,-1],[1,1]]
+      elsif p.type == "pawn" && p.color == "black"
+        moves -= [[-1,1],[-1,-1]]
+      end
+      moves_array = []
+      moves.size.times do |n|
+        proposal = []
+        proposal << (position[0] + moves[n-1][0])
+        proposal << (position[1] + moves[n-1][1])
+        n += 1
+        if comp_move_to_human(proposal)
+          moves_array << comp_move_to_human(proposal)
+        end
+      end
+      moves_array
+    end
+
+    def set_all_avalible_moves(p)
+      position = human_move_to_coordinate(p.present_position)
+      moves = p.move
+      if p.type == "pawn" && p.n_of_moves > 0
+          moves -= [[2,0],[-2,0]]
+      end
+      if p.type == "pawn" && p.color == "white"
+        moves -= [[2,0],[1,0]]
+      elsif p.type == "pawn" && p.color == "black"
+        moves -= [[-2,0],[-1,0]]
+      end
+      moves_array = []
+      moves.size.times do |n|
+        proposal = []
+        proposal << (position[0] + moves[n-1][0])
+        proposal << (position[1] + moves[n-1][1])
+        n += 1
+        if comp_move_to_human(proposal)
+          moves_array << comp_move_to_human(proposal)
+        end
+      end
+      moves_array
+    end
+
+    def assign_avalible_attacks
+      avalible_pieces.each do |piece|
+        piece.possible_attack_destination = set_all_avalible_attacks(piece)
+        #puts "#{piece.name}: #{piece.possible_attack_destination}"
+      end
+    end
+
+    def assign_avalible_moves
+      avalible_pieces.each do |piece|
+        piece.possible_move_destination = set_all_avalible_moves(piece)
+        #puts "#{piece.name}: #{piece.possible_move_destination}"
+      end
+    end
+
+    def king_chekin(destination)
+      avalible_pieces.each do |piece|
+        if piece.color == other_player.color
+          if piece.possible_attack_destination.include?(destination)
+            puts "mamy figure #{piece}"
+            #if check_attack_route(piece.present_position, destination)
+            if check_future_attack_route(piece.present_position, destination)
+              return false
+            end
+          end
+        end
+      end
+      return true
+    end
+
+    def check_if_king_in_reach(sp, ep)
+      king_position = ep
+      ok = []
+      sp, ep = human_move_to_coordinate(sp), human_move_to_coordinate(ep)
+      x = ep[0] - sp[0] 
+      y = ep[1] - sp[1]
+      if sp[0] == ep[0] || sp[1] == ep[1]
+        #puts "ruch poziomy lub pionowy"
+        nm = sp
+        cx = 0
+        cy = 0
+        until nm == ep || cx == -10 || cx == 10
+          cx = x == 0 ? 0 : x > 0 ? 1 : -1
+          cy = y == 0 ? 0 : y > 0 ? 1 : -1
+          nm[0] += cx
+          nm[1] += cy
+          destination = comp_move_to_human(nm)
+          if check_pawn_move_destination(destination) || king_position == destination
+            ok << destination
+          else
+            return false
+          end
+        end
+        return true
+      elsif x.abs == y.abs
+        #puts "ruch na ukos"
+        nm = sp
+        cx = 0
+        cy = 0
+        until nm == ep || cx == -15 || cx == 15
+          cx = x == 0 ? 0 : x > 0 ? 1 : -1
+          cy = y == 0 ? 0 : y > 0 ? 1 : -1
+          nm[0] += cx
+          nm[1] += cy
+          destination = comp_move_to_human(nm)
+          if check_pawn_move_destination(destination) || king_position == destination
+            ok << destination
+          else
+            return false
+          end
+        end
+        return true
+      else
+        #puts "ruch konia"
+        return true
+      end
+    end
+
+    def check_how_many_is_bloking(sp, ep)
+      yourKing = select_piece("#{@current_player.color[0]}K")
+      king_position = yourKing[0].present_position
+      blok = []
+      sp, ep = human_move_to_coordinate(sp), human_move_to_coordinate(ep)
+      x = ep[0] - sp[0] 
+      y = ep[1] - sp[1]
+      if sp[0] == ep[0] || sp[1] == ep[1]
+        #puts "ruch poziomy lub pionowy"
+        nm = sp
+        cx = 0
+        cy = 0
+        until nm == ep || cx == -10 || cx == 10
+          cx = x == 0 ? 0 : x > 0 ? 1 : -1
+          cy = y == 0 ? 0 : y > 0 ? 1 : -1
+          nm[0] += cx
+          nm[1] += cy
+          destination = comp_move_to_human(nm)
+          if check_pawn_move_destination(destination) == false && king_position != destination
+            puts "destination #{destination}"
+            blok << destination
+          end
+        end
+        return blok.size
+      elsif x.abs == y.abs
+        #puts "ruch na ukos"
+        nm = sp
+        cx = 0
+        cy = 0
+        until nm == ep || cx == -15 || cx == 15
+          cx = x == 0 ? 0 : x > 0 ? 1 : -1
+          cy = y == 0 ? 0 : y > 0 ? 1 : -1
+          nm[0] += cx
+          nm[1] += cy
+          destination = comp_move_to_human(nm)
+          if check_pawn_move_destination(destination) == false && king_position != destination
+            puts "destination #{destination}"
+            blok << destination
+          end
+        end
+        return blok.size
+      else
+        #puts "ruch konia"
+        return 0
+      end
+    end
+
+    def check_if_king_secured(p_to_be_moved)
+      yourKing = select_piece("#{@current_player.color[0]}K")
+      king_position = yourKing[0].present_position
+      avalible_pieces.each do |piece|
+        if piece.color == other_player.color
+          if piece.possible_attack_destination.include?(king_position)
+            if piece.possible_attack_destination.include?(p_to_be_moved.present_position) 
+              if check_how_many_is_bloking(piece.present_position, king_position) == 1
+                return false
+              else
+                return true
+              end
+            end
+          end
+        end
+      end
+      return true
+    end
+
+    def check_king_escape
+      puts "check_king_escape definition starts"
+      safe_moves = []
+      yourKing = select_piece("#{@current_player.color[0]}K")
+      yourKing[0].possible_attack_destination.each do |pos|
+        if king_chekin(pos)
+          if check_destination(pos)
+            safe_moves << pos
+          end
+        end
+      end
+      safe_moves
+    end
+
+    def find_attacker
+      yourKing = select_piece("#{@current_player.color[0]}K")
+      destination = yourKing[0].present_position
+      puts "king destination #{destination}"
+      avalible_pieces.each do |piece|
+        if piece.color == other_player.color
+          if piece.possible_attack_destination.include?(destination)
+            #puts "piece that can get to our king #{piece.name}, #{piece.present_position}"
+            if check_if_king_in_reach(piece.present_position, destination)
+              #puts "#{piece.name}, #{piece.present_position}"
+              return piece
+            else
+              puts "vadsffadsf--------------"
+              puts check_if_king_in_reach(piece.present_position, destination)
+            end
+          end
+        end
+      end
+    end
+
+    def check_if_attacker_can_be_taken
+      puts "check_if_attacker_can_be_taken starts ------------"
+      #target = 
+      #puts "target = #{target} ------------"
+      #target = find_attacker
+      destination = find_attacker.present_position
+      puts "destination = #{destination} ------------"
+      avalible_pieces.each do |piece|
+        if piece.color == current_player.color
+          if piece.possible_attack_destination.include?(destination)
+            #puts "piece that can get to our attacker #{piece.name}, #{piece.present_position}"
+            if check_if_king_in_reach(piece.present_position, destination)
+              puts "piece that can get to our attacker #{piece.name}, #{piece.present_position}"
+              if piece.type == "king"
+                puts "piece type is king"
+                if king_chekin(destination)
+                  if check_destination(destination)
+                    puts "our saveiour is #{piece.name}, #{piece.present_position}"
+                    # return piece.present_position
+                    # wyrzuca adres atakujcego jako dozwolony ruch jezeli ktorys z pionkow faktycznie moze go dopasc
+                    return destination
+                  else
+                    puts "nothing found"
+                    return
+                  end
+                else
+                  puts "king can't take his adversary"
+                  return                
+                end
+              else
+                if check_destination(destination)
+                  puts "our saveiour is #{piece.name}, #{piece.present_position}"
+                  # return piece.present_position
+                  # wyrzuca adres atakujcego jako dozwolony ruch jezeli ktorys z pionkow faktycznie moze go dopasc
+                  return destination
+                else
+                  puts "nothing found"
+                  return
+                end
+              end
+            else
+              puts "no piece can reach our adversary unfortunately"
+              return  
+            end
+          else
+            puts "no piece can move near our adversary"
+            return
+          end
+        end
+      end
+    end
+
+    def check_what_can_be_blocked(sp, ep)
+      king_position = ep
+      can_be_bloked = []
+      sp, ep = human_move_to_coordinate(sp), human_move_to_coordinate(ep)
+      x = ep[0] - sp[0] 
+      y = ep[1] - sp[1]
+      if sp[0] == ep[0] || sp[1] == ep[1]
+        #puts "ruch poziomy lub pionowy"
+        nm = sp
+        cx = 0
+        cy = 0
+        until nm == ep || cx == -10 || cx == 10
+          cx = x == 0 ? 0 : x > 0 ? 1 : -1
+          cy = y == 0 ? 0 : y > 0 ? 1 : -1
+          nm[0] += cx
+          nm[1] += cy
+          destination = comp_move_to_human(nm)
+          if check_pawn_move_destination(destination) && king_position != destination
+            can_be_bloked << destination
+          end
+        end
+        return can_be_bloked
+      elsif x.abs == y.abs
+        #puts "ruch na ukos"
+        nm = sp
+        cx = 0
+        cy = 0
+        until nm == ep || cx == -15 || cx == 15
+          cx = x == 0 ? 0 : x > 0 ? 1 : -1
+          cy = y == 0 ? 0 : y > 0 ? 1 : -1
+          nm[0] += cx
+          nm[1] += cy
+          destination = comp_move_to_human(nm)
+          if check_pawn_move_destination(destination) && king_position != destination
+            can_be_bloked << destination
+          end
+        end
+        return can_be_bloked
+      else
+        #puts "ruch konia"
+        return []
+      end
+    end
+
+    def blocking_possitions
+      puts "blocking possition definition starts"
+      block_enabled = []
+      yourKing = select_piece("#{@current_player.color[0]}K")
+      destination = yourKing[0].present_position
+      target = find_attacker.present_position
+
+      puts target.inspect
+      base = check_what_can_be_blocked(target, destination)
+      base.each do |pos|
+        avalible_pieces.each do |piece|
+          if piece.color == current_player.color && piece.type != "king"
+            if piece.possible_move_destination.include?(pos)
+              puts "piece that can BLOCK to our attacker #{piece.name}, #{piece.present_position}"
+              if check_if_king_in_reach(piece.present_position, pos)
+                puts "#{piece.name}, #{piece.present_position}"
+                # return piece.present_position
+                # wyrzuca adres do wspolnej paczki
+                block_enabled << pos
+              else
+                puts "vadsffadsf--------------"
+                puts check_if_king_in_reach(piece.present_position, destination)
+              end
+            end
+          end
+        end
+      end
+      puts "block_enabled size = #{block_enabled.size}"
+      return block_enabled
     end
 
     def check_destination(destination)
@@ -186,6 +686,8 @@ module Chess
       end
     end
 
+    
+
     def check_avalible_moves(pieces, destination)
       valid_array = []
       if pieces.class == Array
@@ -232,9 +734,9 @@ module Chess
           pieces.each do |p|
             position = human_move_to_coordinate(p.present_position)
             moves = p.attack
-            if p.color == "white"
+            if p.type == "Piece" && p.color == "white"
               moves -= [[1,-1],[1,1]]
-            else
+            elsif p.type == "Piece" && p.color == "black"
               moves -= [[-1,1],[-1,-1]]
             end
             moves_array = []
@@ -383,44 +885,72 @@ module Chess
       piece = "#{@current_player.color[0]}#{input.fetch(:piece)}"
       destination = input.fetch(:destination)
       if input.include?(:origin)
-        if select_piece_by_present_position(:origin).name == piece
-          origin = input.fetch(:origin)
-        else
+        origin = input.fetch(:origin)
+        unless select_piece_by_present_position(origin).name == piece
           return false
         end
         if check_if_move_ok(origin, destination)
           if check_destination(destination)
-            delete_piece(destination)
+
             the_piece = select_piece_by_present_position(origin)
-            clean_after_move(the_piece.present_position)
-            x, y = human_move_to_coordinate(destination)
-            board.set_cell(x, y, piece)
-            the_piece.present_position = destination
-            the_piece.moves_made.push(destination)
-            the_piece.n_of_moves += 1
-            return true
+            if check_if_king_secured(the_piece)
+              if check_route(the_piece.present_position, destination)
+                delete_piece(destination)
+              
+                clean_after_move(the_piece.present_position)
+                x, y = human_move_to_coordinate(destination)
+                board.set_cell(x, y, piece)
+                the_piece.present_position = destination
+                the_piece.moves_made.push(destination)
+                the_piece.n_of_moves += 1
+                return true
+              else
+                
+                return false
+              end
+            else
+          
+              return false
+            end
           else
+            
             return false
           end
         elsif check_if_pawn_attack_ok(origin, destination)
           if check_pawn_attack_destination(destination)
-            delete_piece(destination)
+
             the_piece = select_piece_by_present_position(origin)
-            clean_after_move(the_piece.present_position)
-            x, y = human_move_to_coordinate(destination)
-            board.set_cell(x, y, piece)
-            the_piece.present_position = destination
-            the_piece.moves_made.push(destination)
-            the_piece.n_of_moves += 1
-            return true
+            if check_if_king_secured(the_piece)
+            
+              delete_piece(destination)
+            
+              clean_after_move(the_piece.present_position)
+              x, y = human_move_to_coordinate(destination)
+              board.set_cell(x, y, piece)
+              the_piece.present_position = destination
+              the_piece.moves_made.push(destination)
+              the_piece.n_of_moves += 1
+              return true
+            else
+          
+              return false
+            end
+
           else
+            
             return false
           end
         else
+          
           return false
         end
       end
       pInROfDestination = check_avalible_moves(select_piece(piece), destination)
+      pInROfDestination2 = check_avalible_moves(select_piece(piece), destination)
+
+      if pInROfDestination.class == Array && check_pawn_attack(select_piece(piece), destination)
+        pInROfDestination2 << check_pawn_attack(select_piece(piece), destination)
+      end
       if pInROfDestination == false
         pInROfDestination = check_pawn_attack(select_piece(piece), destination)
         if pInROfDestination == false
@@ -428,15 +958,22 @@ module Chess
           return false
         elsif pInROfDestination.size == 1
           if check_pawn_attack_destination(destination)
-            delete_piece(destination)
+
             the_piece = pInROfDestination[0]
-            clean_after_move(the_piece.present_position)
-            x, y = human_move_to_coordinate(destination)
-            board.set_cell(x, y, piece)
-            the_piece.present_position = destination
-            the_piece.moves_made.push(destination)
-            the_piece.n_of_moves += 1
-            return true
+            if check_if_king_secured(the_piece)
+            
+              delete_piece(destination)
+
+              clean_after_move(the_piece.present_position)
+              x, y = human_move_to_coordinate(destination)
+              board.set_cell(x, y, piece)
+              the_piece.present_position = destination
+              the_piece.moves_made.push(destination)
+              the_piece.n_of_moves += 1
+              return true
+            else
+              return false
+            end
           else
             #puts "nie mozesz atakowac pustego pola pionkiem ani ustawiac dwoch pionkow na jednym miejscu"
             return false
@@ -450,22 +987,33 @@ module Chess
             return false
           end
         end
-      elsif pInROfDestination.size == 1
+      elsif pInROfDestination.size == 1 && pInROfDestination2.size == 1
+
         if check_pawn_move_destination(destination)
-          delete_piece(destination)
+
           the_piece = pInROfDestination[0]
-          clean_after_move(the_piece.present_position)
-          x, y = human_move_to_coordinate(destination)
-          board.set_cell(x, y, piece)
-          the_piece.present_position = destination
-          the_piece.moves_made.push(destination)
-          the_piece.n_of_moves += 1
-          return true
+          if check_if_king_secured(the_piece)
+            if check_route(the_piece.present_position, destination)
+              delete_piece(destination)
+            
+              clean_after_move(the_piece.present_position)
+              x, y = human_move_to_coordinate(destination)
+              board.set_cell(x, y, piece)
+              the_piece.present_position = destination
+              the_piece.moves_made.push(destination)
+              the_piece.n_of_moves += 1
+              return true
+            else
+              return false
+            end
+          else
+            return false
+          end  
         else
           return false
         end
-      elsif pInROfDestination.size > 1 
-        if check_pawn_move_destination(destination)
+      elsif pInROfDestination.size > 1 || pInROfDestination2.size > 1
+        if check_pawn_move_destination(destination) || check_pawn_attack_destination(destination)
           puts "wiecej niz 1 pionek moze sie ruszyc na wybrane pole. Uzyj raz jeszcze dluzszej komendy np. 'e7-f6', 'Ng8-f6'"
           return false
         else
@@ -478,47 +1026,150 @@ module Chess
     def all_move(input)
       piece = "#{@current_player.color[0]}#{input.fetch(:piece)}"
       destination = input.fetch(:destination)
-      if input.include?(:origin)
-        origin = input.fetch(:origin)
-        if check_destination(destination)
-          delete_piece(destination)
-          the_piece = select_piece_by_present_position(origin)
-          clean_after_move(the_piece.present_position)
-          x, y = human_move_to_coordinate(destination)
-          board.set_cell(x, y, piece)
-          the_piece.present_position = destination
-          the_piece.moves_made.push(destination)
-          the_piece.n_of_moves += 1
-          return true
+
+      if piece[1] == "K"
+        if king_chekin(destination)
+          if input.include?(:origin)
+            origin = input.fetch(:origin)
+            if check_destination(destination)
+
+              the_piece = select_piece_by_present_position(origin)
+              if check_if_king_secured(the_piece)
+                if check_attack_route(the_piece.present_position, destination)
+                  delete_piece(destination)
+                
+                  clean_after_move(the_piece.present_position)
+                  x, y = human_move_to_coordinate(destination)
+                  board.set_cell(x, y, piece)
+                  the_piece.present_position = destination
+                  the_piece.moves_made.push(destination)
+                  the_piece.n_of_moves += 1
+
+                  return true
+                else
+                  puts "1"
+                  return false
+                end
+              else
+                puts "2"
+                return false
+              end
+            else
+              puts "3"
+              return false
+            end
+          end
+          pInROfDestination = check_avalible_moves(select_piece(piece), destination)
+          if pInROfDestination == nil 
+            return false
+          elsif pInROfDestination.size == 1
+            if check_destination(destination)
+
+              the_piece = pInROfDestination[0]
+              if check_if_king_secured(the_piece)
+                if check_attack_route(the_piece.present_position, destination)
+                  delete_piece(destination)
+                
+                  clean_after_move(the_piece.present_position)
+                  x, y = human_move_to_coordinate(destination)
+                  board.set_cell(x, y, piece)
+                  the_piece.present_position = destination
+                  the_piece.moves_made.push(destination)
+                  the_piece.n_of_moves += 1
+                  return true
+                else
+                  return false
+                end
+              else
+                return false
+              end  
+            else
+              #puts "nie mozesz miec dwoch figur na jednym polu"
+              return false
+            end
+          elsif pInROfDestination.size > 1
+            if check_destination(destination)
+              puts "wiecej niz 1 pionek moze sie ruszyc na wybrane pole. Uzyj raz jeszcze dluzszej komendy np. 'e7-f6', 'Ng8-f6'"
+              return false
+            else
+            #puts "please select piece to move"
+              return false
+            end
+          end
         else
+          puts "king cannot move there!!"
           return false
+        end  
+      else
+        if input.include?(:origin)
+          origin = input.fetch(:origin)
+          if check_destination(destination)
+
+            the_piece = select_piece_by_present_position(origin)
+            if check_if_king_secured(the_piece)
+              if check_attack_route(the_piece.present_position, destination)
+                delete_piece(destination)
+              
+                clean_after_move(the_piece.present_position)
+                x, y = human_move_to_coordinate(destination)
+                board.set_cell(x, y, piece)
+                the_piece.present_position = destination
+                the_piece.moves_made.push(destination)
+                the_piece.n_of_moves += 1
+
+                return true
+              else
+                puts "1"
+                return false
+              end
+            else
+              puts "2"
+              return false
+            end
+          else
+            puts "3"
+            return false
+          end
         end
-      end
-      pInROfDestination = check_avalible_moves(select_piece(piece), destination)
-      if pInROfDestination == nil 
-        return false
-      elsif pInROfDestination.size == 1
-        if check_destination(destination)
-          delete_piece(destination)
-          the_piece = pInROfDestination[0]
-          clean_after_move(the_piece.present_position)
-          x, y = human_move_to_coordinate(destination)
-          board.set_cell(x, y, piece)
-          the_piece.present_position = destination
-          the_piece.moves_made.push(destination)
-          the_piece.n_of_moves += 1
-          return true
-        else
-          #puts "nie mozesz miec dwoch figur na jednym polu"
+        pInROfDestination = check_avalible_moves(select_piece(piece), destination)
+        if pInROfDestination == nil 
           return false
-        end
-      elsif pInROfDestination.size > 1
-        if check_destination(destination)
-          puts "wiecej niz 1 pionek moze sie ruszyc na wybrane pole. Uzyj raz jeszcze dluzszej komendy np. 'e7-f6', 'Ng8-f6'"
-          return false
-        else
-        #puts "please select piece to move"
-          return false
+        elsif pInROfDestination.size == 1
+          if check_destination(destination)
+
+            the_piece = pInROfDestination[0]
+            if check_if_king_secured(the_piece)
+              if check_attack_route(the_piece.present_position, destination)
+                delete_piece(destination)
+              
+                clean_after_move(the_piece.present_position)
+                x, y = human_move_to_coordinate(destination)
+                board.set_cell(x, y, piece)
+                the_piece.present_position = destination
+                the_piece.moves_made.push(destination)
+                the_piece.n_of_moves += 1
+                return true
+              else
+                puts "4"
+                return false
+              end
+            else
+              puts "5"
+              return false
+            end  
+          else
+            puts "6"
+            #puts "nie mozesz miec dwoch figur na jednym polu"
+            return false
+          end
+        elsif pInROfDestination.size > 1
+          if check_destination(destination)
+            puts "wiecej niz 1 pionek moze sie ruszyc na wybrane pole. Uzyj raz jeszcze dluzszej komendy np. 'e7-f6', 'Ng8-f6'"
+            return false
+          else
+          #puts "please select piece to move"
+            return false
+          end
         end
       end
     end
@@ -689,9 +1340,31 @@ module Chess
   	def play
   	  puts "#{current_player.name} has #{current_player.color} pieces"
   	  while true
-  	  	#board.formatted_grid
+        assign_avalible_attacks
+        assign_avalible_moves
+        if check_mode
+          last_moves = []
+          puts "defend your king!"
+          last_moves = check_king_escape
+          puts "1 --------------------------------------------- #{last_moves}"
+          if check_if_attacker_can_be_taken
+            last_moves << check_if_attacker_can_be_taken
+          end
+          puts "2 - #{last_moves}"
+          if blocking_possitions
+            last_moves += blocking_possitions
+          end
+          #puts "3 - #{last_moves}"
+          if last_moves.empty?
+            puts "C H E C K - M A T E"
+            return false
+          else
+            puts "no pitstapu, coprende? #{last_moves.inspect}"
+          end
+        end
         board.print_board 
   	  	puts ""
+               
   	  	puts solicit_move
 
   	  	r = next_move
@@ -701,15 +1374,7 @@ module Chess
         end
         activate_check_mode
         check_pawn_promotion
-        
-  	  	#board.set_cell(x, y, current_player.color)
-  	  	#if board.game_over
-  	  	#  puts game_over_message
-  	  	  #board.formatted_grid
-  	  	#  return
-  	  	#else
   	  	switch_players
-  	  	#end
   	  end
   	end
 
