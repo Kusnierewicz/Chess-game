@@ -1,20 +1,10 @@
-# Chess
-
-TODO: Write a gem description
+# The Odin Project Assignment: "Build Chess Game in Ruby"
 
 ## Installation
 
-Add this line to your application's Gemfile:
-
-    gem 'chess'
-
-And then execute:
+Before running execute:
 
     $ bundle
-
-Or install it yourself as:
-
-    $ gem install chess
 
 ## Usage
 
