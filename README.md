@@ -4,7 +4,7 @@ My implementation of Chess - a two-player strategy board game played on a chessb
 
 ## Installation
 
-Save Mastermind folder in your chosen location
+Save Chess folder in your chosen location
 
 And then inside of it execute:
 
@@ -21,7 +21,7 @@ TO DO: write how to play
 ## Still in developement stage!!
 
 Simple Graphics
-No castling
+No Castling
 No Draw
 
 ## Contributing
