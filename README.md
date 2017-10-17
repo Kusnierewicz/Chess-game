@@ -18,20 +18,22 @@ To play the game run:
     
 You can play as Bob (white pieces e.g. wP, wB, wQ) or Frank (black piesec e.g. bP, bB, bQ)
 
-To make your move use [Algebraic chess notation](https://en.wikipedia.org/wiki/Algebraic_notation_(chess))
+## To make your move use [Algebraic chess notation](https://en.wikipedia.org/wiki/Algebraic_notation_(chess))
 
-Rules of move input:
-
-1. To move a piece
-    Be5 (move a bishop to e5) 
+To move a piece
+    
     Nf3 (move a knight to f3)
+
     d3 (move a pawn to f3)
+
+    Be5 (move a bishop to e5) 
     
-2. You ought to omit indication that any capture has been made! Game will notice any captures automaticly.
+You ought to omit indication that any capture has been made! Game will notice any captures automaticly.
     
-3. If you move a piece to a position where another same piece can move, game will notice the it and ask you to be more specific. You can be more specific by inputing:
+If you move a piece to a position where another same piece can move, game will notice the it and ask you to be more specific. You can be more specific by inputing:
 
     e7-f6 (move a pawn from e7 to f6)
+
     Ng8-f6 (move a pawn from Ng8 to f6)
     
 ## Still in developement stage!! (TO DO!)
