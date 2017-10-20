@@ -53,3 +53,7 @@ If you move a piece to a position where another same piece can move, game will n
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
+
+## License
+
+\* See [license.txt](https://github.com/Kusnierewicz/Chess-game/blob/master/LICENSE.txt) for usage details.
